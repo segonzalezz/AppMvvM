@@ -1,4 +1,4 @@
-package com.segonzalezz.eventsmvvmapp.ui.theme
+package com.segonzalezz.eventsmvvmapp.presentation.components.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

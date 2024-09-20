@@ -1,4 +1,4 @@
-package com.segonzalezz.eventsmvvmapp.ui.theme
+package com.segonzalezz.eventsmvvmapp.presentation.components.theme
 
 import android.app.Activity
 import android.os.Build
