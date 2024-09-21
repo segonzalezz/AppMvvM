@@ -51,9 +51,5 @@ Despues de la creación de Prototipos se hizo los componentes y las pantallas co
 ![Alter](app/images/recovery.jpeg)
 
 </div>
-<div align="center"> 
-  
-![Alter](app/images/editt.jpeg)
 
-</div>
 
