@@ -26,7 +26,9 @@ fun DefaultTextField(
     label: String,
     icon: ImageVector,
     keyboardType: KeyboardType = KeyboardType.Text,
-    hideText: Boolean = false
+    hideText: Boolean = false,
+    readOnly: Boolean = false,
+    trailingIcon: @Composable (() -> Unit)? = null
 ){
     OutlinedTextField(
         modifier = modifier,
@@ -37,6 +39,8 @@ fun DefaultTextField(
         leadingIcon = {
             Icon(imageVector = icon, contentDescription = "Icono usuario", tint = Color.White)
         },
+        trailingIcon = trailingIcon,
+        readOnly = readOnly,
         visualTransformation = if(hideText) PasswordVisualTransformation() else VisualTransformation.None
     )
 }

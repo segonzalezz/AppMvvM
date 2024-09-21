@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -18,6 +19,7 @@ import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Card
@@ -35,6 +37,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultButton
+import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultDatePickerDocked
+import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultDropdownMenu
 import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultTextField
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.login.components.BoxHeader
 
@@ -43,7 +47,8 @@ import com.segonzalezz.eventsmvvmapp.presentation.components.screens.login.compo
 fun RegisterContent(){
     Column(
         modifier = Modifier
-            .fillMaxWidth().verticalScroll(rememberScrollState()),
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState()),
     ) {
         BoxHeader()
         CardForm()
@@ -58,17 +63,19 @@ fun RegisterContent(){
         var password by remember { mutableStateOf("") }
         var numero by remember { mutableStateOf("") }
         var direccion by remember { mutableStateOf("") }
+        val list = listOf("Administrador", "Usuario")
+        var selectedRoleIndex by remember { mutableStateOf(0) }
 
         Card(
             modifier = Modifier
                 .padding(start = 40.dp, end = 40.dp)
-                .offset(y = (-230).dp)
+                .offset(y = (-275).dp)
                 .fillMaxWidth()
                 .wrapContentHeight()
         ) {
             Column( modifier = Modifier.padding(horizontal = 20.dp)) {
                 Text(
-                    text = "Register",
+                    text = "Registro",
                     modifier = Modifier.padding(top = 20.dp, bottom = 0.dp, start = 0.dp, end = 0.dp),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
@@ -103,6 +110,9 @@ fun RegisterContent(){
                 DefaultTextField(modifier = Modifier
                     .padding()
                     .fillMaxWidth(), value = direccion, onValueChange = {direccion = it}, label = "Dirección", icon = Icons.Default.LocationOn, keyboardType = KeyboardType.Email)
+                Spacer(modifier = Modifier.height(14.dp))
+                Text(text = "Fecha nacimiento:", modifier = Modifier.align(Alignment.Start), color = Color.White)
+                DefaultDatePickerDocked()
                 Spacer(modifier = Modifier.height(10.dp))
                 DefaultButton(text = "Registrarse", onClick = {} )
             }
@@ -116,7 +126,7 @@ fun RegisterContent(){
             modifier = Modifier
                 .height(350.dp)
                 .fillMaxWidth()
-                .background(color = Color.Gray)
+                .background(color = Color.Cyan)
         ) {
             Column(
                 modifier = Modifier

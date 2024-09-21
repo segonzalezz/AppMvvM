@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.login.LoginScreen
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.recoverpassword.RecoverPasswordScreen
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.register.RegisterScreen
+import com.segonzalezz.eventsmvvmapp.presentation.components.screens.registercoupons.RegisterCouponsScreen
 
 @Composable
 fun AppNavegation(navController: NavHostController){
@@ -18,10 +19,13 @@ fun AppNavegation(navController: NavHostController){
             LoginScreen(navController)
         }
         composable(route = AppScreens.RegisterScreen.route){
-            RegisterScreen()
+            RegisterScreen(navController)
         }
         composable(route = AppScreens.RecoverPasswordScreen.route){
             RecoverPasswordScreen()
+        }
+        composable(route = AppScreens.RegisterCouponsScreen.route){
+            RegisterCouponsScreen()
         }
     }
 
