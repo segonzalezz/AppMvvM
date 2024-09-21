@@ -44,8 +44,8 @@ fun DefaultDropdownMenu(
             onExpandedChange = { isExpanded = !isExpanded }
         ) {
             DefaultTextField(modifier = Modifier
-                .padding(end = 50.dp).menuAnchor()
-                .fillMaxWidth().offset(x = (-9.2).dp),
+                .padding().menuAnchor()
+                .fillMaxWidth(),
                 value = options[selectedIndex],
                 onValueChange = {},
                 label = "",

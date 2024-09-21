@@ -4,9 +4,11 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.segonzalezz.eventsmvvmapp.presentation.components.screens.editregister.EditRegisterScreen
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.login.LoginScreen
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.recoverpassword.RecoverPasswordScreen
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.register.RegisterScreen
+import com.segonzalezz.eventsmvvmapp.presentation.components.screens.registerEvents.RegisterEventsScreen
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.registercoupons.RegisterCouponsScreen
 
 @Composable
@@ -26,6 +28,12 @@ fun AppNavegation(navController: NavHostController){
         }
         composable(route = AppScreens.RegisterCouponsScreen.route){
             RegisterCouponsScreen()
+        }
+        composable(route = AppScreens.RegisterEventsScreen.route){
+            RegisterEventsScreen()
+        }
+        composable(route = AppScreens.EditRegisterScreen.route){
+            EditRegisterScreen()
         }
     }
 

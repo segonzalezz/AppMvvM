@@ -20,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Info
@@ -73,7 +74,7 @@ fun CardForm(){
     var password by remember { mutableStateOf("") }
     var numero by remember { mutableStateOf("") }
     var direccion by remember { mutableStateOf("") }
-    val list = listOf("Administrador", "Usuario")
+    val list = listOf("Arte y Cultura", "Música y Conciertos")
     var selectedRoleIndex by remember { mutableStateOf(0) }
 
     Card(
@@ -81,7 +82,7 @@ fun CardForm(){
             .padding(start = 40.dp, end = 40.dp, top = 26.dp)
             .fillMaxWidth()
             .wrapContentHeight()
-            .offset(y = (-90).dp)
+            .offset(y = (-152).dp)
     ) {
         Column( modifier = Modifier.padding(horizontal = 20.dp)) {
             Text(
@@ -101,7 +102,7 @@ fun CardForm(){
             Spacer(modifier = Modifier.height(10.dp))
             DefaultTextField(modifier = Modifier
                 .padding()
-                .fillMaxWidth(), value = email, onValueChange = {email = it}, label = "Nombre", icon = Icons.Default.MailOutline, keyboardType = KeyboardType.Email)
+                .fillMaxWidth(), value = email, onValueChange = {email = it}, label = "Nombre", icon = Icons.Default.Info, keyboardType = KeyboardType.Email)
             Spacer(modifier = Modifier.height(12.dp))
             Text(text = "Stock cupon:", color = Color.White)
             Spacer(modifier = Modifier.height(10.dp))
@@ -109,12 +110,16 @@ fun CardForm(){
             Spacer(modifier = Modifier.height(10.dp))
             Spacer(modifier = Modifier.height(12.dp))
             Text(text = "Fecha Inicio:", color = Color.White)
-            Spacer(modifier = Modifier.height(10.dp))
             DefaultDatePickerDocked()
             Spacer(modifier = Modifier.height(10.dp))
             Text(text = "Fecha Fin:", color = Color.White)
-            Spacer(modifier = Modifier.height(10.dp))
             DefaultDatePickerDocked()
+            Spacer(modifier = Modifier.height(10.dp))
+            Text(text = "Descuento:", color = Color.White)
+            DefaultTextField(modifier = Modifier
+                .padding()
+                .fillMaxWidth(), value = email, onValueChange = {email = it}, label = "Precio descuento Cupon", icon = Icons.Default.Info, keyboardType = KeyboardType.Email)
+            Spacer(modifier = Modifier.height(10.dp))
             DefaultButton(text = "Crear", onClick = {} )
 
         }

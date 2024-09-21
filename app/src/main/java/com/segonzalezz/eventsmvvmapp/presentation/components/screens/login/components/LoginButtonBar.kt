@@ -2,11 +2,13 @@ package com.segonzalezz.eventsmvvmapp.presentation.components.screens.login.comp
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
@@ -21,16 +23,39 @@ import com.segonzalezz.eventsmvvmapp.presentation.navegation.AppScreens
 
 @Composable
 fun LoginButtonBar(navController: NavHostController){
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(50.dp),
-        horizontalArrangement = Arrangement.Center
-    ) {
-        Text(text = "¿Quieres crear tu propia cuenta?", modifier = Modifier.clickable { navController.navigate(route = AppScreens.RegisterScreen.route) })
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(5.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(text = "¿Quieres crear tu propia cuenta?", modifier = Modifier.clickable { navController.navigate(route = AppScreens.RegisterScreen.route) })
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(text = "Creación de Cupones", modifier = Modifier.clickable { navController.navigate(route = AppScreens.RegisterCouponsScreen.route) })
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(text = "Creacion de Eventos", modifier = Modifier.clickable { navController.navigate(route = AppScreens.RegisterEventsScreen.route) })
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 20.dp, bottom = 20.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(text = "Editar Cuenta", modifier = Modifier.clickable { navController.navigate(route = AppScreens.EditRegisterScreen.route) })
+        }
     }
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(10.dp),
-        horizontalArrangement = Arrangement.Center
-    ) {
-        Text(text = "Creación de Cupones", modifier = Modifier.clickable { navController.navigate(route = AppScreens.RegisterCouponsScreen.route) })
-    }
+
 }
