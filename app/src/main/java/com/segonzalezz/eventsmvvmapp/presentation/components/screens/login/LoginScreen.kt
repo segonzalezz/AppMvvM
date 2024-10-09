@@ -9,10 +9,10 @@ import com.segonzalezz.eventsmvvmapp.presentation.components.screens.login.compo
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun LoginScreen(navController: NavHostController){
+fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel){
     Scaffold(
         topBar = {},
-        content = { LoginContent(navController) },
+        content = { LoginContent(navController, viewModel) },
         bottomBar = { LoginButtonBar(navController) }
     )
 }

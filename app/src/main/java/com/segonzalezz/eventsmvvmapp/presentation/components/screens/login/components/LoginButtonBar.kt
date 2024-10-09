@@ -27,34 +27,12 @@ fun LoginButtonBar(navController: NavHostController){
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(5.dp),
+                .padding(25.dp),
             horizontalArrangement = Arrangement.Center
         ) {
-            Text(text = "¿Quieres crear tu propia cuenta?", modifier = Modifier.clickable { navController.navigate(route = AppScreens.RegisterScreen.route) })
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 10.dp),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Text(text = "Creación de Cupones", modifier = Modifier.clickable { navController.navigate(route = AppScreens.RegisterCouponsScreen.route) })
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 10.dp),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Text(text = "Creacion de Eventos", modifier = Modifier.clickable { navController.navigate(route = AppScreens.RegisterEventsScreen.route) })
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 20.dp, bottom = 20.dp),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Text(text = "Editar Cuenta", modifier = Modifier.clickable { navController.navigate(route = AppScreens.EditRegisterScreen.route) })
+            Text(
+                text = "¿Quieres crear tu propia cuenta?",
+                modifier = Modifier.clickable { navController.navigate(route = AppScreens.RegisterScreen.route) })
         }
     }
 

@@ -6,5 +6,7 @@ sealed class AppScreens (val route: String){
     object RegisterCouponsScreen : AppScreens("RegisterCouponsScreen")
     object RegisterEventsScreen : AppScreens("RegisterEventsScreen")
     object EditRegisterScreen : AppScreens("EditRegisterScreen")
+    object MenuAdminScreen : AppScreens("MenuAdminScreen")
+    object MenUserScreen : AppScreens("MenUserScreen")
 
 }
