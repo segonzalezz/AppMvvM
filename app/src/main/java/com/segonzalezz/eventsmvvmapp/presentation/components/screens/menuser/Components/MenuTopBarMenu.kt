@@ -20,7 +20,7 @@ import com.segonzalezz.eventsmvvmapp.presentation.navegation.AppScreens
 @Composable
 fun MenuTopBarMenu(navController: NavHostController) {
     CenterAlignedTopAppBar(
-        title = { Text(text = "Menú de Usuario") },
+        title = { Text(text = "Menú") },
         navigationIcon = {},
         actions = {
             IconButton(onClick = {

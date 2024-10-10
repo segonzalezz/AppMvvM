@@ -1,6 +1,7 @@
 package com.segonzalezz.eventsmvvmapp.presentation.components.screens.menuser.Components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,13 +15,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,7 +38,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.segonzalezz.eventsmvvmapp.R
+import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultButton
+import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultDatePickerDocked
+
 @Composable
 fun MenUserContent() {
     Box(
@@ -105,12 +114,14 @@ fun ShowCategories() {
 
 @Composable
 fun CardItem() {
+    var showDialog by remember { mutableStateOf(false) }
     Card(
         modifier = Modifier
             .padding(20.dp)
             .fillMaxWidth(0.7f)
-            .height(300.dp)
-            .clip(RoundedCornerShape(16.dp)),
+            .height(290.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .clickable { showDialog = true },
         elevation = androidx.compose.material3.CardDefaults.cardElevation(10.dp)
     ) {
         Column(
@@ -144,4 +155,56 @@ fun CardItem() {
             )
         }
     }
+    if (showDialog) {
+        Dialog(onDismissRequest = { showDialog = false }) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp).height(510.dp).offset(y=30.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
+                        shape = RoundedCornerShape(16.dp)
+                    )
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.drake),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(180.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Texto del diálogo
+                    Text(
+                        text = "Detalles de Drake",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    DefaultDatePickerDocked()
+                    Spacer(modifier = Modifier.height(16.dp))
+                    DefaultButton(text = "Reservar", onClick = {})
+                }
+            }
+        }
+    }
+
 }

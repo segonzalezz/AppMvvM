@@ -5,6 +5,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.menuadmin.components.MenuAdminButtonBar
+import com.segonzalezz.eventsmvvmapp.presentation.components.screens.menuadmin.components.MenuAdminContent
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.menuadmin.components.MenuTopBarMenu
 
 
@@ -12,8 +13,8 @@ import com.segonzalezz.eventsmvvmapp.presentation.components.screens.menuadmin.c
 @Composable
 fun MenuAdminScreen(navController: NavHostController){
     Scaffold(
-        topBar = {},
-        content = {MenuTopBarMenu(navController)},
+        topBar = {MenuTopBarMenu(navController)},
+        content = {MenuAdminContent()},
         bottomBar = {MenuAdminButtonBar(navController)}
     )
 }

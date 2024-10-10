@@ -15,6 +15,7 @@ import com.segonzalezz.eventsmvvmapp.presentation.components.screens.menucupon.M
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.menuser.MenUserScreen
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.recoverpassword.RecoverPasswordScreen
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.register.RegisterScreen
+import com.segonzalezz.eventsmvvmapp.presentation.components.screens.registerEvents.RegisterEventsScreen
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.registercoupons.RegisterCouponsScreen
 
 @Composable
@@ -45,6 +46,10 @@ fun AppNavigation(navController: NavHostController, viewModel: LoginViewModel) {
         composable(route = AppScreens.RegisterCouponsScreen.route) {
             RegisterCouponsScreen()
         }
+        composable(route = AppScreens.RegisterEventsScreen.route) {
+            RegisterEventsScreen()
+        }
+
         composable(route = AppScreens.MenuAdminScreen.route) {
             MenuAdminScreen(navController)
         }
@@ -57,5 +62,6 @@ fun AppNavigation(navController: NavHostController, viewModel: LoginViewModel) {
         composable(route = AppScreens.MenuCuponScreen.route) {
             MenuCuponScreen()
         }
+
     }
 }

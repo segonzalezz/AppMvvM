@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
@@ -60,7 +62,8 @@ fun MenuAdminButtonBar(navController: NavHostController){
         BottomAppBar(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .fillMaxWidth().height(52.dp)
+                .fillMaxWidth()
+                .height(52.dp)
         ) {
             IconButton(onClick = { showSearchBar = true }) {
                 Icon(
@@ -77,19 +80,40 @@ fun MenuAdminButtonBar(navController: NavHostController){
             }
         }
 
-        FloatingActionButton(
-            onClick = { navController.navigate(AppScreens.RegisterCouponsScreen.route) },
+        Box(
+            contentAlignment = Alignment.BottomEnd,
             modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(end = 16.dp, bottom = 72.dp),
-            containerColor = MaterialTheme.colorScheme.primary
+                .fillMaxSize()
+                .padding(end = 16.dp, bottom = 72.dp)
         ) {
-            Icon(
-                painter = painterResource(id = R.drawable.local),
-                contentDescription = "Añadir",
-                tint = MaterialTheme.colorScheme.onPrimary
-            )
+            // Botón de fondo
+            FloatingActionButton(
+                onClick = { navController.navigate(AppScreens.RegisterCouponsScreen.route) },
+                modifier = Modifier
+                    .size(56.dp), // Tamaño predeterminado del botón
+                containerColor = MaterialTheme.colorScheme.primary
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.local),
+                    contentDescription = "Añadir",
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+
+            FloatingActionButton(
+                onClick = { navController.navigate(AppScreens.RegisterEventsScreen.route) },
+                modifier = Modifier
+                    .size(40.dp).padding().offset(y = -66.dp).offset(x=-7.dp),
+                containerColor = MaterialTheme.colorScheme.secondary
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.add),
+                    contentDescription = "Añadir",
+                    tint = MaterialTheme.colorScheme.onSecondary
+                )
+            }
         }
+
     }
 }
 
@@ -103,7 +127,9 @@ fun SearchBar(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxSize().offset(y=-259.dp).offset(x = 12.dp)// Hace que el Column ocupe todo el espacio disponible
+            .fillMaxSize()
+            .offset(y = -259.dp)
+            .offset(x = 12.dp)// Hace que el Column ocupe todo el espacio disponible
             .padding(),
         verticalArrangement = Arrangement.Center, // Centra el contenido verticalmente
         horizontalAlignment = Alignment.CenterHorizontally // Centra el contenido horizontalmente
@@ -111,13 +137,13 @@ fun SearchBar(
         Card(
             modifier = modifier
                 .fillMaxWidth()
-                .height(142.dp),
-            shape = RoundedCornerShape(20.dp),
+                .height(142.dp).offset(x = -12.dp).width(200.dp),
+            shape = RoundedCornerShape(0.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(horizontal = 16.dp)
+                modifier = Modifier.padding(horizontal = 20.dp)
             ) {
                 TextField(
                     value = searchText,
@@ -125,7 +151,7 @@ fun SearchBar(
                     placeholder = { Text("Buscar...") },
                     modifier = Modifier
                         .weight(1f)
-                        .padding(vertical = 36.dp),
+                        .padding(vertical = 38.dp, horizontal = 18.dp),
                     colors = TextFieldDefaults.textFieldColors(
                         cursorColor = MaterialTheme.colorScheme.onSurface,
                     ),
