@@ -74,6 +74,8 @@ fun CardForm(){
     var password by remember { mutableStateOf("") }
     var numero by remember { mutableStateOf("") }
     var direccion by remember { mutableStateOf("") }
+    var birthDate by remember { mutableStateOf("") }
+    var birthDatee by remember { mutableStateOf("") }
     val list = listOf("Arte y Cultura", "Música y Conciertos")
     var selectedRoleIndex by remember { mutableStateOf(0) }
 
@@ -110,10 +112,10 @@ fun CardForm(){
             Spacer(modifier = Modifier.height(10.dp))
             Spacer(modifier = Modifier.height(12.dp))
             Text(text = "Fecha Inicio:", color = Color.White)
-            DefaultDatePickerDocked()
+            DefaultDatePickerDocked(onDateSelected = { birthDate = it })
             Spacer(modifier = Modifier.height(10.dp))
             Text(text = "Fecha Fin:", color = Color.White)
-            DefaultDatePickerDocked()
+            DefaultDatePickerDocked(onDateSelected = { birthDatee = it })
             Spacer(modifier = Modifier.height(10.dp))
             Text(text = "Descuento:", color = Color.White)
             DefaultTextField(modifier = Modifier

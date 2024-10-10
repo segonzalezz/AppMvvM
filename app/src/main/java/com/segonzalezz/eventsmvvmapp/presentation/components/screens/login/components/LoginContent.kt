@@ -107,25 +107,65 @@ fun CardForm(navController: NavHostController, viewModel: LoginViewModel,  conte
                 val password = viewModel.password.value
                 Log.d("CardForm", "Intento de inicio de sesión con usuario: $usuario y contraseña: $password")
                 if (usuario.isNotEmpty() && password.isNotEmpty()) {
-                    if (usuario == "admin" && password == "1234") {
+                    // Verificar si es el administrador hardcoded
+                    if (usuario == "Admin" && password == "1234") {
+                        // Guardar los datos del administrador en SharedPreferences
+                        SharedPreferencesManager.savePreferences(
+                            context,
+                            "Admin", // ID
+                            Role.ADMIN,
+                            "Administrador", // Nombre
+                            "admin@domain.com", // Correo
+                            "Admin",
+                            "1234",
+                            "1234567890", // Número de Teléfono
+                            "Dirección Admin", // Dirección
+                            19800101 // Fecha de Nacimiento
+                        )
+
                         Toast.makeText(context, "Inicio de sesión como ADMIN exitoso", Toast.LENGTH_SHORT).show()
                         navController.navigate(AppScreens.MenuAdminScreen.route) {
                             popUpTo(AppScreens.LoginScreen.route) { inclusive = true }
                         }
-                    } else if (usuario == "user" && password == "1234") {
-                        Toast.makeText(context, "Inicio de sesión como USUARIO exitoso", Toast.LENGTH_SHORT).show()
-                        navController.navigate(AppScreens.MenUserScreen.route) {
-                            popUpTo(AppScreens.LoginScreen.route) { inclusive = true }
-                        }
                     } else {
-                        Toast.makeText(context, "Credenciales incorrectas", Toast.LENGTH_SHORT).show()
+                        val storedUsers = SharedPreferencesManager.getAllUsers(context)
+                        val matchingUser = storedUsers.find { it.usuario == usuario && it.contraseña == password }
+
+                        if (matchingUser != null) {
+                            SharedPreferencesManager.savePreferences(
+                                context,
+                                matchingUser.id,
+                                matchingUser.role,
+                                matchingUser.nombre,
+                                matchingUser.correo,
+                                matchingUser.usuario,
+                                matchingUser.contraseña,
+                                matchingUser.numeroTelefono,
+                                matchingUser.direccion,
+                                matchingUser.fechaNacimiento
+                            )
+
+                            // Verificar el rol del usuario y navegar a la pantalla correspondiente
+                            if (matchingUser.role == Role.ADMIN) {
+                                Toast.makeText(context, "success", Toast.LENGTH_SHORT).show()
+                                navController.navigate(AppScreens.MenuAdminScreen.route) {
+                                    popUpTo(AppScreens.LoginScreen.route) { inclusive = true }
+                                }
+                            } else {
+                                Toast.makeText(context, "success", Toast.LENGTH_SHORT).show()
+                                navController.navigate(AppScreens.MenUserScreen.route) {
+                                    popUpTo(AppScreens.LoginScreen.route) { inclusive = true }
+                                }
+                            }
+                        } else {
+                            Toast.makeText(context, "Credenciales incorrectas", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 } else {
-                    Toast.makeText(context, "Por favor, ingrese usuario y contraseña", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Por favor, ingrese usuario y contraseña ", Toast.LENGTH_SHORT).show()
                 }
             })
         }
-
     }
 }
 

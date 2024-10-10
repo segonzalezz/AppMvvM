@@ -115,6 +115,7 @@ fun ShowCategories() {
 @Composable
 fun CardItem() {
     var showDialog by remember { mutableStateOf(false) }
+    var birthDate by remember { mutableStateOf("") }
     Card(
         modifier = Modifier
             .padding(20.dp)
@@ -199,7 +200,7 @@ fun CardItem() {
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-                    DefaultDatePickerDocked()
+                    DefaultDatePickerDocked(onDateSelected = { birthDate = it })
                     Spacer(modifier = Modifier.height(16.dp))
                     DefaultButton(text = "Reservar", onClick = {})
                 }

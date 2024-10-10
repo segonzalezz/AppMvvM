@@ -70,6 +70,7 @@ fun CardForm(){
     var password by remember { mutableStateOf("") }
     var numero by remember { mutableStateOf("") }
     var direccion by remember { mutableStateOf("") }
+    var birthDate by remember { mutableStateOf("") }
     val list = listOf("Administrador", "Usuario")
     var selectedRoleIndex by remember { mutableStateOf(0) }
 
@@ -121,7 +122,7 @@ fun CardForm(){
                 .fillMaxWidth(), value = direccion, onValueChange = {direccion = it}, label = "Dirección", icon = Icons.Default.LocationOn, keyboardType = KeyboardType.Email)
             Spacer(modifier = Modifier.height(14.dp))
             Text(text = "Fecha nacimiento:", modifier = Modifier.align(Alignment.Start), color = Color.White)
-            DefaultDatePickerDocked()
+            DefaultDatePickerDocked(onDateSelected = { birthDate = it })
             Spacer(modifier = Modifier.height(10.dp))
             Text(text = "Cambiar imagen de perfil:", modifier = Modifier.align(Alignment.Start), color = Color.White)
             DefaultImagePicker()

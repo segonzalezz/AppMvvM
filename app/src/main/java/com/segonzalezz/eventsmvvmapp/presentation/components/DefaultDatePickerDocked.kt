@@ -29,75 +29,76 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-@Composable
-fun DefaultDatePickerDocked() {
-    var showDatePicker by remember { mutableStateOf(false) }
-    var selectedDate by remember { mutableStateOf("") }
+    @Composable
+    fun DefaultDatePickerDocked(onDateSelected: (String) -> Unit) {
+        var showDatePicker by remember { mutableStateOf(false) }
+        var selectedDate by remember { mutableStateOf("") }
 
-    Box(
-        modifier = Modifier.fillMaxWidth()
+        Box(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            OutlinedTextField(
+                value = selectedDate,
+                onValueChange = { },
+                label = { Text("Ingresar") },
+                readOnly = true,
+                trailingIcon = {
+                    IconButton(onClick = { showDatePicker = !showDatePicker }) {
+                        Icon(
+                            imageVector = Icons.Default.DateRange,
+                            contentDescription = "Seleccionar Fecha",tint = Color.White
+                        )
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(64.dp)
+            )
+
+            if (showDatePicker) {
+                DatePickerModal(
+                    onDateSelected = { millis ->
+                        millis?.let {
+                            selectedDate = convertMillisToDate(it)
+                            onDateSelected(selectedDate)
+                        }
+                        showDatePicker = false
+                    },
+                    onDismiss = { showDatePicker = false }
+                )
+            }
+        }
+    }
+
+    fun convertMillisToDate(millis: Long): String {
+        val formatter = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
+        return formatter.format(Date(millis))
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun DatePickerModal(
+        onDateSelected: (Long?) -> Unit,
+        onDismiss: () -> Unit
     ) {
-        OutlinedTextField(
-            value = selectedDate,
-            onValueChange = { },
-            label = { Text("Ingresar") },
-            readOnly = true,
-            trailingIcon = {
-                IconButton(onClick = { showDatePicker = !showDatePicker }) {
-                    Icon(
-                        imageVector = Icons.Default.DateRange,
-                        contentDescription = "Seleccionar Fecha",tint = Color.White
-                    )
+        val datePickerState = rememberDatePickerState()
+
+        DatePickerDialog(
+            onDismissRequest = onDismiss,
+            confirmButton = {
+                TextButton(onClick = {
+                    onDateSelected(datePickerState.selectedDateMillis)
+                    onDismiss()
+                }) {
+                    Text("Seleccionar")
                 }
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(64.dp)
-        )
-
-        if (showDatePicker) {
-            DatePickerModal(
-                onDateSelected = { millis ->
-                    millis?.let {
-                        selectedDate = convertMillisToDate(it)
-                    }
-                    showDatePicker = false
-                },
-                onDismiss = { showDatePicker = false }
-            )
+            dismissButton = {
+                TextButton(onClick = onDismiss) {
+                    Text("Cancelar")
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
         }
     }
-}
-
-fun convertMillisToDate(millis: Long): String {
-    val formatter = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
-    return formatter.format(Date(millis))
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DatePickerModal(
-    onDateSelected: (Long?) -> Unit,
-    onDismiss: () -> Unit
-) {
-    val datePickerState = rememberDatePickerState()
-
-    DatePickerDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            TextButton(onClick = {
-                onDateSelected(datePickerState.selectedDateMillis)
-                onDismiss()
-            }) {
-                Text("Seleccionar")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancelar")
-            }
-        }
-    ) {
-        DatePicker(state = datePickerState)
-    }
-}

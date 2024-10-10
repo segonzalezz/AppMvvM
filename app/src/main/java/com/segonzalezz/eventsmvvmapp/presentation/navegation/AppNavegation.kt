@@ -1,11 +1,13 @@
 package com.segonzalezz.eventsmvvmapp.presentation.navegation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.segonzalezz.eventsmvvmapp.data.SharedPreferencesManager
+import com.segonzalezz.eventsmvvmapp.dominio.UserController
 import com.segonzalezz.eventsmvvmapp.model.Role
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.editregister.EditRegisterScreen
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.login.LoginScreen
@@ -24,7 +26,7 @@ fun AppNavigation(navController: NavHostController, viewModel: LoginViewModel) {
     val session = SharedPreferencesManager.getCurrentUser(context)
 
     var startDestination = AppScreens.LoginScreen.route
-    if (session != null && session.rol == Role.ADMIN) {
+    if (session != null && session.role == Role.ADMIN) {
         AppScreens.MenuAdminScreen.route
     } else {
         AppScreens.MenUserScreen.route

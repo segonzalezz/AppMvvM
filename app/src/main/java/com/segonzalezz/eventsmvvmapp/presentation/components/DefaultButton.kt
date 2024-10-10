@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun DefaultButton(
     text:String,
-    onClick:() -> Unit,
+    onClick:() ->  Unit,
     color : Color = Color.Cyan,
 ){
 
