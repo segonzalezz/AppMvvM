@@ -11,9 +11,11 @@ import com.segonzalezz.eventsmvvmapp.presentation.components.screens.editregiste
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.login.LoginScreen
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.login.LoginViewModel
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.menuadmin.MenuAdminScreen
+import com.segonzalezz.eventsmvvmapp.presentation.components.screens.menucupon.MenuCuponScreen
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.menuser.MenUserScreen
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.recoverpassword.RecoverPasswordScreen
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.register.RegisterScreen
+import com.segonzalezz.eventsmvvmapp.presentation.components.screens.registercoupons.RegisterCouponsScreen
 
 @Composable
 fun AppNavigation(navController: NavHostController, viewModel: LoginViewModel) {
@@ -40,6 +42,9 @@ fun AppNavigation(navController: NavHostController, viewModel: LoginViewModel) {
         composable(route = AppScreens.RecoverPasswordScreen.route) {
             RecoverPasswordScreen()
         }
+        composable(route = AppScreens.RegisterCouponsScreen.route) {
+            RegisterCouponsScreen()
+        }
         composable(route = AppScreens.MenuAdminScreen.route) {
             MenuAdminScreen(navController)
         }
@@ -48,6 +53,9 @@ fun AppNavigation(navController: NavHostController, viewModel: LoginViewModel) {
         }
         composable(route = AppScreens.EditRegisterScreen.route) {
             EditRegisterScreen()
+        }
+        composable(route = AppScreens.MenuCuponScreen.route) {
+            MenuCuponScreen()
         }
     }
 }

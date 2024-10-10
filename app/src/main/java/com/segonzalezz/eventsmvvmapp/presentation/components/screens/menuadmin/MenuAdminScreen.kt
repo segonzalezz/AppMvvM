@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import com.segonzalezz.eventsmvvmapp.presentation.components.screens.menuadmin.components.MenuAdminButtonBar
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.menuadmin.components.MenuTopBarMenu
 
 
@@ -13,6 +14,6 @@ fun MenuAdminScreen(navController: NavHostController){
     Scaffold(
         topBar = {},
         content = {MenuTopBarMenu(navController)},
-        bottomBar = { }
+        bottomBar = {MenuAdminButtonBar(navController)}
     )
 }

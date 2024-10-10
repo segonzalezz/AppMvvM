@@ -1,4 +1,4 @@
-package com.segonzalezz.eventsmvvmapp.presentation.components.screens.menuser.Components
+package com.segonzalezz.eventsmvvmapp.presentation.components.screens.menuadmin.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,14 +12,16 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.*
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,8 +35,9 @@ import androidx.navigation.NavHostController
 import com.segonzalezz.eventsmvvmapp.R
 import com.segonzalezz.eventsmvvmapp.presentation.navegation.AppScreens
 
+
 @Composable
-fun MenUserButtonBar(navController: NavHostController) {
+fun MenuAdminButtonBar(navController: NavHostController){
     var showSearchBar by remember { mutableStateOf(false) }
     var searchText by remember { mutableStateOf("") }
     Box(
@@ -75,7 +78,7 @@ fun MenUserButtonBar(navController: NavHostController) {
         }
 
         FloatingActionButton(
-            onClick = { navController.navigate(AppScreens.MenuCuponScreen.route) },
+            onClick = { navController.navigate(AppScreens.RegisterCouponsScreen.route) },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 16.dp, bottom = 72.dp),
@@ -138,6 +141,3 @@ fun SearchBar(
         }
     }
 }
-
-
-
