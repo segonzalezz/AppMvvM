@@ -16,10 +16,11 @@ import com.segonzalezz.eventsmvvmapp.presentation.components.screens.login.Login
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.register.RegisterScreen
 import com.segonzalezz.eventsmvvmapp.presentation.components.theme.EventsMVVMAppTheme
 import com.segonzalezz.eventsmvvmapp.presentation.navegation.AppNavigation
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private lateinit var navController: NavHostController
-    val loginViewModel: LoginViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -27,7 +28,7 @@ class MainActivity : ComponentActivity() {
             EventsMVVMAppTheme {
                 Surface(modifier = Modifier.fillMaxSize(),  color = MaterialTheme.colorScheme.background) {
                     navController = rememberNavController()
-                    AppNavigation(navController = navController, viewModel = loginViewModel)
+                    AppNavigation(navController = navController)
                 }
             }
         }

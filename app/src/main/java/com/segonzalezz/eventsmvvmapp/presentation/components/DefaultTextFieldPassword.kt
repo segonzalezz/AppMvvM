@@ -1,5 +1,7 @@
 package com.segonzalezz.eventsmvvmapp.presentation.components
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
@@ -21,6 +23,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.segonzalezz.eventsmvvmapp.R
 
 @Composable
@@ -28,9 +32,12 @@ fun DefaultTextFieldPassword(
     modifier: Modifier,
     value: String,
     onValueChange: (String) -> Unit,
+    validateField: () -> Unit = {},
     label: String,
     icon: ImageVector,
-    keyboardType: KeyboardType = KeyboardType.Text
+    keyboardType: KeyboardType = KeyboardType.Text,
+    errorMsg: String = ""
+
 ){
     var passwordVisible by remember { mutableStateOf(false) }
     val icon2 =  if(passwordVisible){
@@ -38,20 +45,27 @@ fun DefaultTextFieldPassword(
     }else{
         painterResource(id = R.drawable.visibility_off)
     }
-    OutlinedTextField(
-        modifier = modifier,
-        value = value,
-        onValueChange = {onValueChange(it)},
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-        label = { Text(label) },
-        leadingIcon = {
-            Icon(imageVector = icon, contentDescription = "Icono password", tint = Color.White)
-        },
-        trailingIcon = {
-            IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                Icon(painter = icon2, contentDescription = "Icono ver contraseña", tint = Color.White)
-            }
-        },
-        visualTransformation = if(passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
-    )
+    Column {
+        OutlinedTextField(
+            modifier = modifier,
+            value = value,
+            onValueChange = {
+                onValueChange(it)
+                validateField()},
+            keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+            label = { Text(label) },
+            leadingIcon = {
+                Icon(imageVector = icon, contentDescription = "Icono password", tint = Color.White)
+            },
+            trailingIcon = {
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(painter = icon2, contentDescription = "Icono ver contraseña", tint = Color.White)
+                }
+            },
+            visualTransformation = if(passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
+        )
+        Text(modifier = Modifier.padding(top=5.dp), text =errorMsg, fontSize = 11.sp, color = Color.Red )
+
+    }
+
 }

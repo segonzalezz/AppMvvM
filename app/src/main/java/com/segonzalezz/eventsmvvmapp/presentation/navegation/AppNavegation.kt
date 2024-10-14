@@ -21,7 +21,7 @@ import com.segonzalezz.eventsmvvmapp.presentation.components.screens.registerEve
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.registercoupons.RegisterCouponsScreen
 
 @Composable
-fun AppNavigation(navController: NavHostController, viewModel: LoginViewModel) {
+fun AppNavigation(navController: NavHostController) {
     val context = LocalContext.current
     val session = SharedPreferencesManager.getCurrentUser(context)
 
@@ -37,7 +37,7 @@ fun AppNavigation(navController: NavHostController, viewModel: LoginViewModel) {
         startDestination = startDestination
     ) {
         composable(route = AppScreens.LoginScreen.route) {
-            LoginScreen(navController, viewModel)
+            LoginScreen(navController)
         }
         composable(route = AppScreens.RegisterScreen.route) {
             RegisterScreen(navController)

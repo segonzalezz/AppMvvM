@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "924940549134",
+    "project_id": "thistle-8e714",
+    "storage_bucket": "thistle-8e714.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:924940549134:android:d6d660203c6888112c505f",
+        "android_client_info": {
+          "package_name": "com.segonzalezz.eventsmvvmapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCv9IeYg4cGIQM8RuU_5uqyd1hDjVXnLhk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:924940549134:android:7f3243b858aec4d12c505f",
+        "android_client_info": {
+          "package_name": "com.segonzalezz.thistle_11"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCv9IeYg4cGIQM8RuU_5uqyd1hDjVXnLhk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

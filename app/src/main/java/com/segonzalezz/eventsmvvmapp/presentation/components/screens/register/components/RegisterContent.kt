@@ -1,5 +1,6 @@
 package com.segonzalezz.eventsmvvmapp.presentation.components.screens.register.components
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -44,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.segonzalezz.eventsmvvmapp.R
 import com.segonzalezz.eventsmvvmapp.dominio.UserController
@@ -53,6 +55,8 @@ import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultButton
 import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultDatePickerDocked
 import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultDropdownMenu
 import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultTextField
+import com.segonzalezz.eventsmvvmapp.presentation.components.screens.login.LoginViewModel
+import com.segonzalezz.eventsmvvmapp.presentation.components.screens.register.RegisterViewModel
 import com.segonzalezz.eventsmvvmapp.presentation.navegation.AppScreens
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -60,31 +64,18 @@ import java.util.Locale
 
 @Composable
 fun RegisterContent(navController: NavHostController){
-    val contextt = LocalContext.current
-    val userController = remember { UserController(contextt) }
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState()),
     ) {
         BoxHeader()
-        CardForm(userController, navController)
+        CardForm(navController)
     }
 }
 
     @Composable
-    fun CardForm(userController: UserController,navController: NavHostController){
-        var name by remember { mutableStateOf("") }
-        var email by remember { mutableStateOf("") }
-        var usuario by remember { mutableStateOf("") }
-        var password by remember { mutableStateOf("") }
-        var numero by remember { mutableStateOf("") }
-        var direccion by remember { mutableStateOf("") }
-        var birthDate by remember { mutableStateOf("") }
-        var showError by remember { mutableStateOf(false) }
-        var errorMessage by remember { mutableStateOf("") }
-        val context = LocalContext.current
-
+    fun CardForm(navController: NavHostController,  viewModel: RegisterViewModel = hiltViewModel()){
         Card(
             modifier = Modifier
                 .padding(start = 40.dp, end = 40.dp)
@@ -104,108 +95,89 @@ fun RegisterContent(navController: NavHostController){
                 Spacer(modifier = Modifier.height(16.dp))
                 DefaultTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    value = name,
-                    onValueChange = { name = it },
+                    value = viewModel.nombre.value,
+                    onValueChange = { viewModel.nombre.value = it },
                     label = "Nombre",
                     icon = Icons.Default.Face,
-                    keyboardType = KeyboardType.Text
+                    keyboardType = KeyboardType.Text,
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 DefaultTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    value = email,
-                    onValueChange = { email = it },
+                    value = viewModel.email.value,
+                    onValueChange = { viewModel.email.value = it },
                     label = "Email",
                     icon = Icons.Default.Email,
-                    keyboardType = KeyboardType.Email
+                    keyboardType = KeyboardType.Email,
+                    errorMsg = viewModel.emailErrorMsg.value,
+                    validateField = {viewModel.validateEmail()}
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 DefaultTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    value = usuario,
-                    onValueChange = { usuario = it },
+                    value = viewModel.nombreUsuario.value,
+                    onValueChange = { viewModel.nombreUsuario.value = it },
                     label = "Usuario",
                     icon = Icons.Default.AccountBox,
-                    keyboardType = KeyboardType.Text
+                    keyboardType = KeyboardType.Text,
+                    errorMsg = viewModel.nombreUsuarioErrorMsg.value,
+                    validateField = {viewModel.validateNombreUsuario()}
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 DefaultTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    value = password,
-                    onValueChange = { password = it },
-                    label = "Password",
+                    value = viewModel.password.value,
+                    onValueChange = { viewModel.password.value = it },
+                    label = "Contraseña",
                     icon = Icons.Default.Lock,
-                    keyboardType = KeyboardType.Password
+                    keyboardType = KeyboardType.Password,
+                    errorMsg = viewModel.passwordErrorMsg.value,
+                    validateField = {viewModel.validatePassword()}
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 DefaultTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    value = numero,
-                    onValueChange = { numero = it },
+                    value = viewModel.passwordd.value,
+                    onValueChange = { viewModel.passwordd.value = it },
+                    label = "Confirmar contraseña",
+                    icon = Icons.Default.Lock,
+                    keyboardType = KeyboardType.Password,
+                    errorMsg = viewModel.passwordErrorMsgg.value,
+                    validateField = {viewModel.validateConfirmPassword()}
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                DefaultTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = viewModel.numeroTelefono.value,
+                    onValueChange = { viewModel.numeroTelefono.value = it },
                     label = "Numero",
                     icon = Icons.Default.Call,
-                    keyboardType = KeyboardType.Phone
+                    keyboardType = KeyboardType.Phone,
+                    errorMsg = viewModel.numeroTelefonoErrorMsg.value,
+                    validateField = {viewModel.validateNumeroTelefono()}
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 DefaultTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    value = direccion,
-                    onValueChange = { direccion = it },
+                    value = viewModel.direccion.value,
+                    onValueChange = { viewModel.direccion.value = it },
                     label = "Dirección",
                     icon = Icons.Default.LocationOn,
-                    keyboardType = KeyboardType.Text
+                    keyboardType = KeyboardType.Text,
+                    errorMsg = viewModel.direccionErrorMsg.value,
+                    validateField = {viewModel.validateDireccion()}
                 )
                 Spacer(modifier = Modifier.height(14.dp))
                 Text(text = "Fecha nacimiento:", modifier = Modifier.align(Alignment.Start), color = Color.White)
-                DefaultDatePickerDocked(onDateSelected = { birthDate = it })
+                DefaultDatePickerDocked(
+                    onDateSelected = { viewModel.fechaNacimiento.value = it },
+                    errorMsg = viewModel.fechaNacimientoErrorMsg.value,
+                    validateField = {viewModel.validateFechaNacimiento()}
+                )
                 Spacer(modifier = Modifier.height(10.dp))
 
                 DefaultButton(text = "Registrarse", onClick = {
-                    if (birthDate.isEmpty()) {
-                        showError = true
-                        errorMessage = "Falta la fecha de nacimiento"
-                        return@DefaultButton
-                    }
-
-                    val fechaNacimientoInt = try {
-                        val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) // Formato de entrada
-                        val date = sdf.parse(birthDate)
-                        val formattedDate = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(date) // Convertir a "yyyyMMdd"
-                        formattedDate.toInt() // Convertir la cadena "yyyyMMdd" a Int
-                    } catch (e: Exception) {
-                        showError = true
-                        errorMessage = "La fecha de nacimiento no es válida"
-                        return@DefaultButton
-                    }
-
-                    val user = UserDTO(
-                        id = usuario,
-                        nombre = name,
-                        correo = email,
-                        usuario = usuario,
-                        contraseña = password,
-                        numeroTelefono = numero,
-                        direccion = direccion,
-                        fechaNacimiento = fechaNacimientoInt,
-                        role = Role.USER
-                    )
-
-                    val result = userController.registerUser(context,user)
-
-                    if (result == "Registro exitoso") {
-                        Toast.makeText(context, result, Toast.LENGTH_LONG).show()
-                        navController.navigate(AppScreens.LoginScreen.route)
-                    } else {
-                        showError = true
-                        errorMessage = result
-                        Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
-                    }
-                })
-
-                if (showError) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = errorMessage, color = Color.Red)
-                }
+                }, enabled = viewModel.isEnabledRegisterButton)
             }
         }
     }

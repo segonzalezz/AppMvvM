@@ -43,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.segonzalezz.eventsmvvmapp.R
 import com.segonzalezz.eventsmvvmapp.data.SharedPreferencesManager
@@ -52,120 +53,16 @@ import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultTextField
 import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultTextFieldPassword
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.login.LoginViewModel
 import com.segonzalezz.eventsmvvmapp.presentation.navegation.AppScreens
+import dagger.hilt.android.lifecycle.HiltViewModel
 
 @Composable
-fun LoginContent(navController: NavHostController, viewModel: LoginViewModel) {
+fun LoginContent(navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
     ) {
         BoxHeader()
-        val context = LocalContext.current
-        CardForm(navController, viewModel, context)
-    }
-}
-
-@Composable
-fun CardForm(navController: NavHostController, viewModel: LoginViewModel,  context: android.content.Context){
-    var usuario by remember { mutableStateOf("")  }
-    var password by remember { mutableStateOf("") }
-
-    Card(
-        modifier = Modifier
-            .padding(start = 44.dp, end = 40.dp)
-            .offset(y = (-60).dp),
-    ) {
-        Column( modifier = Modifier.padding(horizontal = 20.dp)) {
-            Text(
-                text = stringResource(id = R.string.login),
-                modifier = Modifier.padding(top = 10.dp, bottom = 0.dp, start = 0.dp, end = 0.dp),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
-
-            Text(
-                text = "Por favor iniciar sesión:"
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            DefaultTextField(modifier = Modifier
-                .padding()
-                .fillMaxWidth(), value = viewModel.username.value, onValueChange = {viewModel.username.value = it}, label = stringResource(
-                id = R.string.usernameLabel), icon = Icons.Default.AccountBox, keyboardType = KeyboardType.Email)
-            Spacer(modifier = Modifier.height(10.dp))
-            DefaultTextFieldPassword(
-                modifier = Modifier
-                    .padding()
-                    .fillMaxWidth(), value = viewModel.password.value, onValueChange = {viewModel.password.value = it}, label = stringResource(R.string.passwordLabel), icon = Icons.Default.Lock, keyboardType = KeyboardType.Password)
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(text = "Recuperar contraseña", modifier = Modifier
-                .align(Alignment.End)
-                .clickable { navController.navigate(route = AppScreens.RecoverPasswordScreen.route) }, color = Color.White)
-            Spacer(modifier = Modifier.height(10.dp))
-            DefaultButton(text = "Iniciar Sesión", onClick = {
-                val usuario = viewModel.username.value
-                val password = viewModel.password.value
-                Log.d("CardForm", "Intento de inicio de sesión con usuario: $usuario y contraseña: $password")
-                if (usuario.isNotEmpty() && password.isNotEmpty()) {
-                    // Verificar si es el administrador hardcoded
-                    if (usuario == "Admin" && password == "1234") {
-                        // Guardar los datos del administrador en SharedPreferences
-                        SharedPreferencesManager.savePreferences(
-                            context,
-                            "Admin", // ID
-                            Role.ADMIN,
-                            "Administrador", // Nombre
-                            "admin@domain.com", // Correo
-                            "Admin",
-                            "1234",
-                            "1234567890", // Número de Teléfono
-                            "Dirección Admin", // Dirección
-                            19800101 // Fecha de Nacimiento
-                        )
-
-                        Toast.makeText(context, "Inicio de sesión como ADMIN exitoso", Toast.LENGTH_SHORT).show()
-                        navController.navigate(AppScreens.MenuAdminScreen.route) {
-                            popUpTo(AppScreens.LoginScreen.route) { inclusive = true }
-                        }
-                    } else {
-                        val storedUsers = SharedPreferencesManager.getAllUsers(context)
-                        val matchingUser = storedUsers.find { it.usuario == usuario && it.contraseña == password }
-
-                        if (matchingUser != null) {
-                            SharedPreferencesManager.savePreferences(
-                                context,
-                                matchingUser.id,
-                                matchingUser.role,
-                                matchingUser.nombre,
-                                matchingUser.correo,
-                                matchingUser.usuario,
-                                matchingUser.contraseña,
-                                matchingUser.numeroTelefono,
-                                matchingUser.direccion,
-                                matchingUser.fechaNacimiento
-                            )
-
-                            // Verificar el rol del usuario y navegar a la pantalla correspondiente
-                            if (matchingUser.role == Role.ADMIN) {
-                                Toast.makeText(context, "success", Toast.LENGTH_SHORT).show()
-                                navController.navigate(AppScreens.MenuAdminScreen.route) {
-                                    popUpTo(AppScreens.LoginScreen.route) { inclusive = true }
-                                }
-                            } else {
-                                Toast.makeText(context, "success", Toast.LENGTH_SHORT).show()
-                                navController.navigate(AppScreens.MenUserScreen.route) {
-                                    popUpTo(AppScreens.LoginScreen.route) { inclusive = true }
-                                }
-                            }
-                        } else {
-                            Toast.makeText(context, "Credenciales incorrectas", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                } else {
-                    Toast.makeText(context, "Por favor, ingrese usuario y contraseña ", Toast.LENGTH_SHORT).show()
-                }
-            })
-        }
+        CardForm(navController)
     }
 }
 
@@ -186,3 +83,45 @@ fun BoxHeader(){
         )
     }
 }
+
+@Composable
+fun CardForm(navController: NavHostController, viewModel: LoginViewModel = hiltViewModel()){
+    Card(
+        modifier = Modifier
+            .padding(start = 44.dp, end = 40.dp)
+            .offset(y = (-88).dp),
+    ) {
+        Column( modifier = Modifier.padding(horizontal = 20.dp)) {
+            Text(
+                text = stringResource(id = R.string.login),
+                modifier = Modifier.padding(top = 10.dp, bottom = 0.dp, start = 0.dp, end = 0.dp),
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+            Text(
+                text = "Por favor iniciar sesión:"
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            DefaultTextField(modifier = Modifier
+                .padding()
+                .fillMaxWidth(), value = viewModel.email.value, onValueChange = {viewModel.email.value = it}, label = stringResource(
+                id = R.string.usernameLabel), icon = Icons.Default.AccountBox, keyboardType = KeyboardType.Email, errorMsg = viewModel.emailErrorMsg.value, validateField = {viewModel.validateEmail()})
+            Spacer(modifier = Modifier.height(10.dp))
+            DefaultTextFieldPassword(
+                modifier = Modifier
+                    .padding()
+                    .fillMaxWidth(), value = viewModel.password.value, onValueChange = {viewModel.password.value = it}, label = stringResource(R.string.passwordLabel), icon = Icons.Default.Lock, keyboardType = KeyboardType.Password, errorMsg = viewModel.passwordErrorMsg.value, validateField = {viewModel.validatePassword()})
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(text = "Recuperar contraseña", modifier = Modifier
+                .align(Alignment.End)
+                .clickable { navController.navigate(route = AppScreens.RecoverPasswordScreen.route) }, color = Color.White)
+            Spacer(modifier = Modifier.height(10.dp))
+            DefaultButton(text = "Iniciar Sesión", onClick = {
+                Log.d("LoginContent", "Email: ${viewModel.email.value}")
+                Log.d("LoginContent", "Password: ${viewModel.password.value}")
+            }, enabled = viewModel.isEnabledLoginButton )
+        }
+    }
+}
+
