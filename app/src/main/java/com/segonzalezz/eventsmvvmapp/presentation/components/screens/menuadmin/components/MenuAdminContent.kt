@@ -63,7 +63,7 @@ fun MenuAdminContent() {
                     .horizontalScroll(rememberScrollState()) // Scroll horizontal para el Row
                     .padding(bottom = 20.dp),
             ) {
-                repeat(10) {
+                repeat(1) {
                     CardItem(imageResId = R.drawable.scott)
                 }
             }
@@ -81,7 +81,7 @@ fun MenuAdminContent() {
                     .fillMaxWidth()
                     .horizontalScroll(rememberScrollState()) // Otro scroll horizontal
             ) {
-                repeat(10) {
+                repeat(1) {
                     CardItem(imageResId = R.drawable.jett)
                 }
             }

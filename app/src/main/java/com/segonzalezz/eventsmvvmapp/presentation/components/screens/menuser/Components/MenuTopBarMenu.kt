@@ -21,7 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import com.segonzalezz.eventsmvvmapp.data.SharedPreferencesManager
-import com.segonzalezz.eventsmvvmapp.data.SharedPreferencesManager.getCurrentUser
+//import com.segonzalezz.eventsmvvmapp.data.SharedPreferencesManager.getCurrentUser
 import com.segonzalezz.eventsmvvmapp.presentation.navegation.AppScreens
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -30,8 +30,8 @@ fun MenuTopBarMenu(navController: NavHostController) {
     var username by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
     LaunchedEffect(Unit) {
-        val currentUser = SharedPreferencesManager.getCurrentUser(context)
-        username = currentUser?.usuario
+       // val currentUser = SharedPreferencesManager.getCurrentUser(context)
+        //username = currentUser?.usuario
     }
 
     CenterAlignedTopAppBar(

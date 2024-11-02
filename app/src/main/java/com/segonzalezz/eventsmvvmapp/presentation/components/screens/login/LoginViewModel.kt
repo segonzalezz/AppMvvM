@@ -3,11 +3,28 @@ package com.segonzalezz.eventsmvvmapp.presentation.components.screens.login
 import android.util.Patterns
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import com.segonzalezz.eventsmvvmapp.model.Role
+import com.segonzalezz.eventsmvvmapp.presentation.navegation.AppScreens
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(): ViewModel() {
+    val db = Firebase.firestore
+    val auth = Firebase.auth
+
+    val startDestination = mutableStateOf(AppScreens.LoginScreen.route)
+
+    init {
+        determineStartDestination()
+    }
+
 
     var email : MutableState<String> = mutableStateOf("")
     var isEmailValid: MutableState<Boolean> = mutableStateOf(false);
@@ -44,5 +61,56 @@ class LoginViewModel @Inject constructor(): ViewModel() {
         }
         enabledLoginButton()
     }
+
+    private fun determineStartDestination() {
+        viewModelScope.launch {
+            val currentUser = auth.currentUser
+            if (currentUser != null) {
+                try {
+                    val snapshot = db.collection("users")
+                        .document(currentUser.uid)
+                        .get()
+                        .await()
+
+                    val role = snapshot.getString("role")
+                    startDestination.value = when (role) {
+                        "ADMIN" -> AppScreens.MenuAdminScreen.route
+                        "USER" -> AppScreens.MenUserScreen.route
+                        else -> AppScreens.LoginScreen.route
+                    }
+                } catch (e: Exception) {
+                    startDestination.value = AppScreens.LoginScreen.route
+                }
+            } else {
+                startDestination.value = AppScreens.LoginScreen.route
+            }
+        }
+    }
+
+        fun login(onSuccess: () -> Unit, onError: (String) -> Unit) {
+            viewModelScope.launch {
+                try {
+                    val result = auth.signInWithEmailAndPassword(email.value, password.value).await()
+                    val user = result.user
+                    if (user != null) {
+                        val snapshot = db.collection("users")
+                            .document(user.uid)
+                            .get()
+                            .await()
+                        val role = snapshot.getString("role")
+                        startDestination.value = when (role) {
+                            "ADMIN" -> AppScreens.MenuAdminScreen.route
+                            "USER" -> AppScreens.MenUserScreen.route
+                            else -> AppScreens.LoginScreen.route
+                        }
+                        onSuccess()
+                    } else {
+                        onError("Error de autenticación.")
+                    }
+                } catch (e: Exception) {
+                    onError("Error al iniciar sesión: ${e.localizedMessage}")
+                }
+            }
+        }
 
 }

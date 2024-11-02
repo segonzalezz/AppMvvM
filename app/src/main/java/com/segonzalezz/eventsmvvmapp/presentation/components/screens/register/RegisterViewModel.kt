@@ -4,13 +4,34 @@ import android.util.Log
 import android.util.Patterns
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.traceEventEnd
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import com.segonzalezz.eventsmvvmapp.model.User
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(): ViewModel() {
+
+    val db = Firebase.firestore
+    val auth = Firebase.auth
+
+    private val _users = MutableStateFlow( emptyList<User>())
+    val users : StateFlow<List<User>> = _users.asStateFlow()
+
+    init{
+        loadUsers()
+    }
+
+    //Todo esto son validaciones
 
     var nombre: MutableState<String> = mutableStateOf("")
 
@@ -131,5 +152,34 @@ class RegisterViewModel @Inject constructor(): ViewModel() {
         }
     }
 
+    //Logica de negocio
 
+    fun loadUsers() {
+        viewModelScope.launch {
+            _users.value = getUsersList()
+        }
+    }
+    private suspend fun getUsersList(): List<User> {
+        val snapshot = db.collection("users")
+            .get().await()
+        return snapshot.documents.mapNotNull {
+            val user = it.toObject(User::class.java)
+            requireNotNull(user)
+            user.id = it.id
+            user
+        }
+    }
+
+    suspend fun createUser(user: User, onSuccess: () -> Unit, onError: (String) -> Unit) {
+        val result = auth.createUserWithEmailAndPassword(user.email, user.password).await()
+        val userId = result.user?.uid
+        if (userId != null) {
+            user.id = userId
+            db.collection("users").document(userId).set(user).await()
+            loadUsers()
+            onSuccess()
+        } else {
+            onError("Error al crear usuario: ID de usuario nulo.")
+        }
+    }
 }

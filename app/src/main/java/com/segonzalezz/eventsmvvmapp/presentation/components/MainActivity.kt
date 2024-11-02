@@ -17,6 +17,7 @@ import com.segonzalezz.eventsmvvmapp.presentation.components.screens.register.Re
 import com.segonzalezz.eventsmvvmapp.presentation.components.theme.EventsMVVMAppTheme
 import com.segonzalezz.eventsmvvmapp.presentation.navegation.AppNavigation
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.HiltAndroidApp
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

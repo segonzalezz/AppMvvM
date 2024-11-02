@@ -1,20 +1,15 @@
 package com.segonzalezz.eventsmvvmapp.presentation.components.screens.register.components
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,7 +19,6 @@ import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Card
@@ -46,20 +40,16 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.segonzalezz.eventsmvvmapp.R
-import com.segonzalezz.eventsmvvmapp.dominio.UserController
-import com.segonzalezz.eventsmvvmapp.model.Role
-import com.segonzalezz.eventsmvvmapp.model.dto.UserDTO
+import com.segonzalezz.eventsmvvmapp.model.User
 import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultButton
 import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultDatePickerDocked
-import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultDropdownMenu
 import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultTextField
-import com.segonzalezz.eventsmvvmapp.presentation.components.screens.login.LoginViewModel
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.register.RegisterViewModel
 import com.segonzalezz.eventsmvvmapp.presentation.navegation.AppScreens
-import java.text.SimpleDateFormat
-import java.util.Locale
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -76,6 +66,8 @@ fun RegisterContent(navController: NavHostController){
 
     @Composable
     fun CardForm(navController: NavHostController,  viewModel: RegisterViewModel = hiltViewModel()){
+        val context = LocalContext.current
+        var errorMessage by remember { mutableStateOf("") }
         Card(
             modifier = Modifier
                 .padding(start = 40.dp, end = 40.dp)
@@ -177,6 +169,29 @@ fun RegisterContent(navController: NavHostController){
                 Spacer(modifier = Modifier.height(10.dp))
 
                 DefaultButton(text = "Registrarse", onClick = {
+                    viewModel.viewModelScope.launch {
+                        viewModel.viewModelScope.launch {
+                            val newUser = User(
+                                name = viewModel.nombre.value,
+                                email = viewModel.email.value,
+                                username = viewModel.nombreUsuario.value,
+                                password = viewModel.password.value,
+                                phoneNumber = viewModel.numeroTelefono.value,
+                                address = viewModel.direccion.value,
+                                birthDate = viewModel.fechaNacimiento.value
+                            )
+                            viewModel.createUser(newUser,
+                                onSuccess = {
+                                    navController.navigate(AppScreens.LoginScreen.route) {
+                                        popUpTo(AppScreens.RegisterScreen.route) { inclusive = true }
+                                    }
+                                },
+                                onError = { message ->
+                                    Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                                }
+                            )
+                        }
+                    }
                 }, enabled = viewModel.isEnabledRegisterButton)
             }
         }

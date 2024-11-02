@@ -2,7 +2,6 @@ package com.segonzalezz.eventsmvvmapp.data
 
 import android.content.Context
 import com.segonzalezz.eventsmvvmapp.model.Role
-import com.segonzalezz.eventsmvvmapp.model.dto.UserDTO
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -29,7 +28,7 @@ object SharedPreferencesManager {
         editor.apply()
     }
 
-    fun addUserToList(context: Context, user: UserDTO) {
+   /* fun addUserToList(context: Context, user: UserDTO) {
         val sharedPreferences = context.getSharedPreferences("sesion", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         val currentUsersJson = sharedPreferences.getString(USERS_KEY, "[]")
@@ -104,6 +103,6 @@ object SharedPreferencesManager {
         } catch (e: IllegalArgumentException) {
             null
         }
-    }
+    }*/
 }
 

@@ -22,8 +22,10 @@ import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,7 +40,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -46,17 +47,14 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.segonzalezz.eventsmvvmapp.R
-import com.segonzalezz.eventsmvvmapp.data.SharedPreferencesManager
-import com.segonzalezz.eventsmvvmapp.model.Role
 import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultButton
 import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultTextField
 import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultTextFieldPassword
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.login.LoginViewModel
 import com.segonzalezz.eventsmvvmapp.presentation.navegation.AppScreens
-import dagger.hilt.android.lifecycle.HiltViewModel
 
 @Composable
-fun LoginContent(navController: NavHostController) {
+fun LoginContent(navController: NavHostController, viewModel: LoginViewModel = hiltViewModel()) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -64,6 +62,7 @@ fun LoginContent(navController: NavHostController) {
         BoxHeader()
         CardForm(navController)
     }
+
 }
 
 @Composable
@@ -86,6 +85,7 @@ fun BoxHeader(){
 
 @Composable
 fun CardForm(navController: NavHostController, viewModel: LoginViewModel = hiltViewModel()){
+    val context = LocalContext.current
     Card(
         modifier = Modifier
             .padding(start = 44.dp, end = 40.dp)
@@ -118,8 +118,21 @@ fun CardForm(navController: NavHostController, viewModel: LoginViewModel = hiltV
                 .clickable { navController.navigate(route = AppScreens.RecoverPasswordScreen.route) }, color = Color.White)
             Spacer(modifier = Modifier.height(10.dp))
             DefaultButton(text = "Iniciar Sesión", onClick = {
-                Log.d("LoginContent", "Email: ${viewModel.email.value}")
-                Log.d("LoginContent", "Password: ${viewModel.password.value}")
+                viewModel.login(
+                    onSuccess = {
+                        val destination = if (viewModel.startDestination.value == AppScreens.MenuAdminScreen.route) {
+                            AppScreens.MenuAdminScreen.route
+                        } else {
+                            AppScreens.MenUserScreen.route
+                        }
+                        navController.navigate(destination) {
+                            popUpTo(AppScreens.LoginScreen.route) { inclusive = true }
+                        }
+                    },
+                    onError = { message ->
+                        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                    }
+                )
             }, enabled = viewModel.isEnabledLoginButton )
         }
     }
