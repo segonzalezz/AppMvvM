@@ -171,15 +171,19 @@ class RegisterViewModel @Inject constructor(): ViewModel() {
     }
 
     suspend fun createUser(user: User, onSuccess: () -> Unit, onError: (String) -> Unit) {
-        val result = auth.createUserWithEmailAndPassword(user.email, user.password).await()
-        val userId = result.user?.uid
-        if (userId != null) {
-            user.id = userId
-            db.collection("users").document(userId).set(user).await()
-            loadUsers()
-            onSuccess()
-        } else {
-            onError("Error al crear usuario: ID de usuario nulo.")
+        try {
+            val result = auth.createUserWithEmailAndPassword(user.email, user.password).await()
+            val userId = result.user?.uid
+            if (userId != null) {
+                user.id = userId
+                db.collection("users").document(userId).set(user).await()
+                loadUsers()
+                onSuccess()
+            } else {
+                onError("Error al crear usuario: ID de usuario nulo.")
+            }
+        } catch (e: Exception) {
+            onError("Error al crear usuario.")
         }
     }
 }

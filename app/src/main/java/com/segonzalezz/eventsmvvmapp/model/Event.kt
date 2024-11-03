@@ -1,6 +1,6 @@
 package com.segonzalezz.eventsmvvmapp.model
 
-class Event(
+data class Event(
     var id: String = "",
     val title: String = "",
     val description: String = "",
@@ -10,5 +10,4 @@ class Event(
     val locations: List<Location> = listOf(),
     val type: EventType = EventType.DEFAULT,
     val imagUrl: String = "",
-) {
-}
+)

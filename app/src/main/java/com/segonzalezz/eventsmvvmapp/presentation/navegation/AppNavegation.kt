@@ -44,7 +44,7 @@ fun AppNavigation(navController: NavHostController, viewModel: LoginViewModel = 
             RegisterCouponsScreen()
         }
         composable(route = AppScreens.RegisterEventsScreen.route) {
-            RegisterEventsScreen()
+            RegisterEventsScreen(navController)
         }
 
         composable(route = AppScreens.MenuAdminScreen.route) {

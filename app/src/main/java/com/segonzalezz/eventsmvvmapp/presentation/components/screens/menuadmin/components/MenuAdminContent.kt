@@ -36,9 +36,13 @@ import androidx.compose.ui.unit.sp
 import com.segonzalezz.eventsmvvmapp.R
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.collectAsState
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.segonzalezz.eventsmvvmapp.presentation.components.screens.registerEvents.EventsViewModel
 
 @Composable
-fun MenuAdminContent() {
+fun MenuAdminContent(viewModel: EventsViewModel = hiltViewModel()) {
+    val events by viewModel.events.collectAsState()
     Box(
         modifier = Modifier
             .fillMaxSize().verticalScroll(rememberScrollState())
@@ -63,8 +67,12 @@ fun MenuAdminContent() {
                     .horizontalScroll(rememberScrollState()) // Scroll horizontal para el Row
                     .padding(bottom = 20.dp),
             ) {
-                repeat(1) {
-                    CardItem(imageResId = R.drawable.scott)
+                events.forEach { event ->
+                    CardItem(
+                        title = event.title,
+                        description = event.description,
+                        imageResId = R.drawable.scott
+                    )
                 }
             }
 
@@ -81,8 +89,12 @@ fun MenuAdminContent() {
                     .fillMaxWidth()
                     .horizontalScroll(rememberScrollState()) // Otro scroll horizontal
             ) {
-                repeat(1) {
-                    CardItem(imageResId = R.drawable.jett)
+                events.forEach { event ->
+                    CardItem(
+                        title = event.title,
+                        description = event.description,
+                        imageResId = R.drawable.scott // Imagen predeterminada siempre
+                    )
                 }
             }
         }
@@ -90,7 +102,11 @@ fun MenuAdminContent() {
 }
 
 @Composable
-fun CardItem(imageResId: Int) {
+fun CardItem(
+    title: String,
+    description: String,
+    imageResId: Int = R.drawable.scott // Imagen predeterminada
+) {
     Card(
         modifier = Modifier
             .padding(16.dp)
@@ -120,14 +136,14 @@ fun CardItem(imageResId: Int) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Drake",
+                text = title,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.padding(bottom = 4.dp)
             )
 
             Text(
-                text = "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+                text = description,
                 style = MaterialTheme.typography.bodyMedium,
                 fontSize = 14.sp,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
@@ -135,3 +151,4 @@ fun CardItem(imageResId: Int) {
         }
     }
 }
+

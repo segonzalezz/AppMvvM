@@ -1,5 +1,6 @@
 package com.segonzalezz.eventsmvvmapp.presentation.components.screens.registerEvents.components
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +27,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.MailOutline
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -51,92 +53,29 @@ import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultDropdownMenu
 import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultSliderMinimal
 import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultTextField
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavHostController
+import com.segonzalezz.eventsmvvmapp.model.Event
+import com.segonzalezz.eventsmvvmapp.model.EventType
+import com.segonzalezz.eventsmvvmapp.presentation.components.LocationInputRow
+import com.segonzalezz.eventsmvvmapp.presentation.components.screens.registerEvents.EventsViewModel
+import com.segonzalezz.eventsmvvmapp.presentation.navegation.AppScreens
+import kotlinx.coroutines.launch
 
 
 @Composable
-fun RegisterEventsContent(){
+fun RegisterEventsContent(navController: NavHostController){
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState()),
     ) {
         BoxHeader()
-        CardForm()
+        CardForm(navController)
     }
 }
-
-@Composable
-fun CardForm(){
-    var name by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var usuario by remember { mutableStateOf("")  }
-    var password by remember { mutableStateOf("") }
-    var numero by remember { mutableStateOf("") }
-    var direccion by remember { mutableStateOf("") }
-    var birthDate by remember { mutableStateOf("") }
-    var birthDatee by remember { mutableStateOf("") }
-    val list = listOf("Arte y Cultura", "Música y Conciertos")
-    var selectedRoleIndex by remember { mutableStateOf(0) }
-
-    Card(
-        modifier = Modifier
-            .padding(start = 40.dp, end = 40.dp, top = 26.dp)
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .offset(y = (-170).dp)
-    ) {
-        Column( modifier = Modifier.padding(horizontal = 20.dp)) {
-            Text(
-                text = "Crear Evento: ",
-                modifier = Modifier.padding(top = 20.dp, bottom = 0.dp, start = 0.dp, end = 0.dp),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
-            Text(
-                text = "Por favor ingresar campos:"
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            DefaultTextField(modifier = Modifier
-                .padding()
-                .fillMaxWidth(), value = name, onValueChange = {name = it}, label = "Nombre del Evento", icon = Icons.Default.Info, keyboardType = KeyboardType.Email)
-            Spacer(modifier = Modifier.height(10.dp))
-            DefaultTextField(modifier = Modifier
-                .padding()
-                .fillMaxWidth(), value = email, onValueChange = {email = it}, label = "Ubicación del Evento", icon = Icons.Default.LocationOn, keyboardType = KeyboardType.Email)
-            Spacer(modifier = Modifier.height(10.dp))
-            DefaultTextField(modifier = Modifier
-                .padding()
-                .fillMaxWidth(), value = email, onValueChange = {email = it}, label = "Información del Evento", icon = Icons.Default.Info, keyboardType = KeyboardType.Email)
-            Spacer(modifier = Modifier.height(10.dp))
-            Text(text = "Seleccionar foto", color = Color.White, modifier = Modifier
-                .align(Alignment.End)
-                .padding(end = 2.dp))
-            Spacer(modifier = Modifier.height(10.dp))
-            Text(text = "Fecha Inicio del Evento:", color = Color.White)
-            DefaultDatePickerDocked(onDateSelected = { birthDate = it })
-            Spacer(modifier = Modifier.height(10.dp))
-            Text(text = "Fecha Fin del Evento:", color = Color.White)
-            DefaultDatePickerDocked(onDateSelected = { birthDatee = it })
-            Spacer(modifier = Modifier.height(10.dp))
-            Text(text = "Numero de Entradas:", color = Color.White)
-            Spacer(modifier = Modifier.height(10.dp))
-            DefaultSliderMinimal()
-            Spacer(modifier = Modifier.height(10.dp))
-            Text(text = "Categoria del Evento:", color = Color.White)
-            DefaultDropdownMenu(options = list, selectedIndex = selectedRoleIndex, onOptionSelected = {}  , icon = Icons.Default.Lock)
-            Spacer(modifier = Modifier.height(10.dp))
-            Text(text = "Precio:", color = Color.White)
-            DefaultTextField(modifier = Modifier
-                .padding()
-                .fillMaxWidth(), value = email, onValueChange = {email = it}, label = "Precio del Evento", icon = Icons.Default.Info, keyboardType = KeyboardType.Email)
-            Spacer(modifier = Modifier.height(10.dp))
-            DefaultButton(text = "Crear", onClick = {} )
-        }
-
-    }
-}
-
 @Composable
 fun BoxHeader(){
     Box(
@@ -153,5 +92,163 @@ fun BoxHeader(){
             contentScale = ContentScale.Crop,
         )
 
+    }
+}
+
+@Composable
+fun CardForm(navController: NavHostController, viewModel: EventsViewModel = hiltViewModel()) {
+    val context = LocalContext.current
+    var errorMessage by remember { mutableStateOf("") }
+    val categoriesList = EventType.values().toList()
+    var selectedCategoryIndex by remember { mutableStateOf(0) }
+
+    Card(
+        modifier = Modifier
+            .padding(start = 40.dp, end = 40.dp)
+            .offset(y = (-150).dp)
+            .fillMaxWidth()
+            .wrapContentHeight()
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+            Text(
+                text = "Crear Evento",
+                modifier = Modifier.padding(top = 20.dp, bottom = 0.dp),
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+            Text(text = "Por favor ingresar campos:", color = Color.White)
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Nombre del Evento
+            DefaultTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = viewModel.title.value,
+                onValueChange = { viewModel.title.value = it },
+                label = "Nombre del Evento",
+                icon = Icons.Default.Info,
+                keyboardType = KeyboardType.Text,
+                errorMsg = viewModel.titleErrorMsg.value,
+                validateField = { viewModel.validateTitle() }
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Descripción del Evento
+            DefaultTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = viewModel.description.value,
+                onValueChange = { viewModel.description.value = it },
+                label = "Descripción del Evento",
+                icon = Icons.Default.Info,
+                keyboardType = KeyboardType.Text,
+                errorMsg = viewModel.descriptionErrorMsg.value,
+                validateField = { viewModel.validateDescription() }
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Fecha de Inicio del Evento
+            Text(text = "Fecha de Inicio del Evento:", modifier = Modifier.align(Alignment.Start), color = Color.White)
+            DefaultDatePickerDocked(
+                onDateSelected = { viewModel.date.value = it },
+                errorMsg = viewModel.dateErrorMsg.value,
+                validateField = { viewModel.validateDate() }
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Ubicación del Evento
+            DefaultTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = viewModel.address.value,
+                onValueChange = { viewModel.address.value = it },
+                label = "Ubicación",
+                icon = Icons.Default.LocationOn,
+                keyboardType = KeyboardType.Text,
+                errorMsg = viewModel.addressErrorMsg.value,
+                validateField = { viewModel.validateAddress() }
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Ciudad del Evento
+            DefaultTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = viewModel.city.value,
+                onValueChange = { viewModel.city.value = it },
+                label = "Ciudad",
+                icon = Icons.Default.Info,
+                keyboardType = KeyboardType.Text,
+                errorMsg = viewModel.cityErrorMsg.value,
+                validateField = { viewModel.validateCity() }
+            )
+            Spacer(modifier = Modifier.height(5.dp))
+
+            // Lista de Locations
+            Text(text = "Ubicaciones del Evento:", color = Color.White)
+            viewModel.locations.value.forEachIndexed { index, location ->
+                LocationInputRow(
+                    location = location,
+                    onNameChange = { newName ->
+                        viewModel.updateLocation(index, location.copy(name = newName))
+                    },
+                    onMaxCapacityChange = { newCapacity ->
+                        viewModel.updateLocation(index, location.copy(maxCapacity = newCapacity))
+                    },
+                    onPriceChange = { newPrice ->
+                        viewModel.updateLocation(index, location.copy(price = newPrice))
+                    },
+                    onRemoveClick = {
+                        viewModel.removeLocation(index)
+                    }
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            // Botón para agregar Location
+            Button(
+                onClick = { viewModel.addLocation() },
+                modifier = Modifier.padding(vertical = 8.dp, horizontal = 55.dp).height(40.dp)
+            ) {
+                Text(text = "Agregar Ubicación")
+            }
+
+            // Categoría del Evento
+            Text(text = "Categoría del Evento:", color = Color.White)
+            DefaultDropdownMenu(
+                options = categoriesList.map { it.name },
+                selectedIndex = selectedCategoryIndex,
+                onOptionSelected = { selectedCategoryIndex = it },
+                icon = Icons.Default.Lock
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Botón para Crear Evento
+            DefaultButton(
+                text = "Crear",
+                enabled = viewModel.isEnabledCreateEventButton,
+                onClick = {
+                    viewModel.viewModelScope.launch {
+                        val newEvent = Event(
+                            title = viewModel.title.value,
+                            description = viewModel.description.value,
+                            date = viewModel.date.value,
+                            address = viewModel.address.value,
+                            city = viewModel.city.value,
+                            type = categoriesList[selectedCategoryIndex], // Asignar el tipo de evento seleccionado
+                            locations = viewModel.locations.value, // Usar las ubicaciones ingresadas
+                            imagUrl = "" // Agregar lógica para la imagen si es necesario
+                        )
+                        viewModel.createEvent(newEvent,
+                            onSuccess = {
+                                navController.navigate(AppScreens.MenuAdminScreen.route) {
+                                    popUpTo(AppScreens.RegisterEventsScreen.route) { inclusive = true }
+                                }
+                            },
+                            onError = { message ->
+                                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                            }
+                        )
+                    }
+                }
+            )
+        }
     }
 }
