@@ -39,10 +39,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.collectAsState
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.registerEvents.EventsViewModel
+import com.segonzalezz.eventsmvvmapp.presentation.components.screens.registercoupons.CouponsViewModel
 
 @Composable
-fun MenuAdminContent(viewModel: EventsViewModel = hiltViewModel()) {
+fun MenuAdminContent(viewModel: EventsViewModel = hiltViewModel(), viewModell: CouponsViewModel = hiltViewModel() ) {
     val events by viewModel.events.collectAsState()
+    val coupons by viewModell.coupons.collectAsState()
     Box(
         modifier = Modifier
             .fillMaxSize().verticalScroll(rememberScrollState())
@@ -89,11 +91,11 @@ fun MenuAdminContent(viewModel: EventsViewModel = hiltViewModel()) {
                     .fillMaxWidth()
                     .horizontalScroll(rememberScrollState()) // Otro scroll horizontal
             ) {
-                events.forEach { event ->
+                coupons.forEach { event ->
                     CardItem(
-                        title = event.title,
-                        description = event.description,
-                        imageResId = R.drawable.scott // Imagen predeterminada siempre
+                        title = event.name,
+                        description = event.salePrice.toString(),
+                        imageResId = R.drawable.jett // Imagen predeterminada siempre
                     )
                 }
             }

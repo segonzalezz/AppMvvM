@@ -3,14 +3,15 @@ package com.segonzalezz.eventsmvvmapp.presentation.components.screens.registerco
 import android.annotation.SuppressLint
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.registercoupons.components.RegisterCouponsContent
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun RegisterCouponsScreen(){
+fun RegisterCouponsScreen(navController: NavHostController){
     Scaffold(
         topBar = {},
-        content = { RegisterCouponsContent()},
+        content = { RegisterCouponsContent(navController)},
         bottomBar = {}
     )
 }

@@ -41,7 +41,7 @@ fun AppNavigation(navController: NavHostController, viewModel: LoginViewModel = 
             RecoverPasswordScreen()
         }
         composable(route = AppScreens.RegisterCouponsScreen.route) {
-            RegisterCouponsScreen()
+            RegisterCouponsScreen(navController)
         }
         composable(route = AppScreens.RegisterEventsScreen.route) {
             RegisterEventsScreen(navController)
