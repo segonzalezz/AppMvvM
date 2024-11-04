@@ -1,5 +1,6 @@
 package com.segonzalezz.eventsmvvmapp.presentation.components.screens.registercoupons
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -108,7 +109,6 @@ class CouponsViewModel @Inject constructor(): ViewModel() {
         enabledCreateCouponButton()
     }
 
-    // Lógica de negocio para los cupones
     fun loadCoupons() {
         viewModelScope.launch {
             _coupons.value = getCouponsList()
@@ -116,24 +116,50 @@ class CouponsViewModel @Inject constructor(): ViewModel() {
     }
 
     private suspend fun getCouponsList(): List<Coupon> {
-        val snapshot = db.collection("coupons")
-            .get().await()
-        return snapshot.documents.mapNotNull {
-            val coupon = it.toObject(Coupon::class.java)
-            requireNotNull(coupon)
-            coupon.id = it.id
-            coupon
+        return try {
+            val snapshot = db.collection("coupons").get().await()
+            val couponsList = snapshot.documents.mapNotNull {
+                val coupon = it.toObject(Coupon::class.java)
+                if (coupon != null) {
+                    Log.d("CouponsViewModel", "Coupon fetched: ${coupon.name}, ${coupon.id}")
+                    coupon.id = it.id
+                    coupon
+                } else {
+                    Log.d("CouponsViewModel", "Error fetching coupon for document: ${it.id}")
+                    null
+                }
+            }
+            Log.d("CouponsViewModel", "Coupons fetched from Firestore: ${couponsList.size}")
+            couponsList
+        } catch (e: Exception) {
+            Log.e("CouponsViewModel", "Error fetching coupons: ${e.message}", e)
+            emptyList()
         }
     }
 
     suspend fun createCoupon(coupon: Coupon, onSuccess: () -> Unit, onError: (String) -> Unit) {
         try {
+            // Agregamos el cupón a Firestore y obtenemos la referencia del nuevo documento creado
             val newCouponRef = db.collection("coupons").add(coupon).await()
-            coupon.id = newCouponRef.id
-            loadCoupons()
-            onSuccess()
+            val couponId = newCouponRef.id
+
+            if (couponId.isNotEmpty()) {
+                coupon.id = couponId
+                // Actualizamos el documento con el nuevo campo `id`
+                db.collection("coupons").document(couponId).set(coupon).await()
+
+                // Recargar los cupones después de crear el nuevo cupón
+                loadCoupons()
+
+                // Invocamos la función de éxito para indicar que el proceso se completó correctamente
+                onSuccess()
+            } else {
+                onError("Error al crear cupón: ID del cupón es nulo o vacío.")
+            }
         } catch (e: Exception) {
-            onError("Error al crear cupón.")
+            onError("Error al crear cupón: ${e.message}")
         }
     }
+
+
 }

@@ -73,6 +73,7 @@ fun MenuAdminContent(viewModel: EventsViewModel = hiltViewModel(), viewModell: C
                     CardItem(
                         title = event.title,
                         description = event.description,
+                        vigencia = "Vigencia: "+ event.date,
                         imageResId = R.drawable.scott
                     )
                 }
@@ -89,13 +90,14 @@ fun MenuAdminContent(viewModel: EventsViewModel = hiltViewModel(), viewModell: C
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState()) // Otro scroll horizontal
+                    .horizontalScroll(rememberScrollState())
             ) {
-                coupons.forEach { event ->
+                coupons.forEach { coupon ->
                     CardItem(
-                        title = event.name,
-                        description = event.salePrice.toString(),
-                        imageResId = R.drawable.jett // Imagen predeterminada siempre
+                        title = coupon.name,
+                        description = "Descuento: " + coupon.salePrice.toString(),
+                        vigencia = "Vigencia: " + coupon.startDate,
+                        imageResId = R.drawable.jett
                     )
                 }
             }
@@ -107,6 +109,7 @@ fun MenuAdminContent(viewModel: EventsViewModel = hiltViewModel(), viewModell: C
 fun CardItem(
     title: String,
     description: String,
+    vigencia: String,
     imageResId: Int = R.drawable.scott // Imagen predeterminada
 ) {
     Card(
@@ -141,15 +144,25 @@ fun CardItem(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(bottom = 4.dp)
+                modifier = Modifier.padding(bottom = 4.dp).padding(horizontal = 4.dp)
             )
 
             Text(
                 text = description,
                 style = MaterialTheme.typography.bodyMedium,
                 fontSize = 14.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                modifier = Modifier.padding(horizontal = 5.dp)
             )
+
+            Text(
+                text = vigencia,
+                style = MaterialTheme.typography.bodyMedium,
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                modifier = Modifier.padding(top=4.dp).padding(horizontal = 8.dp)
+            )
+
         }
     }
 }
