@@ -115,7 +115,8 @@ fun MenuAdminButtonBar(
                 LazyColumn(
                     modifier = Modifier.fillMaxSize().padding(horizontal = 80.dp)
                 ) {
-                    // Mostrar los eventos encontrados
+                    item {   Text(text = "Eventos encontrados: ", modifier = Modifier.padding(12.dp))}
+
                     if (filteredEvents.isNotEmpty()) {
                         items(filteredEvents) { event ->
                             val isHighlighted = searchText.isNotEmpty()
@@ -124,6 +125,7 @@ fun MenuAdminButtonBar(
                     }
 
                     // Mostrar los cupones encontrados
+                    item {   Text(text = "Cupones encontrados: ", modifier = Modifier.padding(12.dp))}
                     if (filteredCoupons.isNotEmpty()) {
                         items(filteredCoupons) { coupon ->
                             val isHighlighted = searchText.isNotEmpty()

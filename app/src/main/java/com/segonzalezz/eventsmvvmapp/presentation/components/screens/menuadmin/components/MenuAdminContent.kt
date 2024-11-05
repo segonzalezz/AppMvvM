@@ -1,6 +1,7 @@
 package com.segonzalezz.eventsmvvmapp.presentation.components.screens.menuadmin.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,25 +37,36 @@ import androidx.compose.ui.unit.sp
 import com.segonzalezz.eventsmvvmapp.R
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.registerEvents.EventsViewModel
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.registercoupons.CouponsViewModel
 
 @Composable
-fun MenuAdminContent(viewModel: EventsViewModel = hiltViewModel(), viewModell: CouponsViewModel = hiltViewModel() ) {
+fun MenuAdminContent(
+    viewModel: EventsViewModel = hiltViewModel(),
+    viewModell: CouponsViewModel = hiltViewModel()
+) {
     val events by viewModel.events.collectAsState()
     val coupons by viewModell.coupons.collectAsState()
+    var selectedItem by remember { mutableStateOf<Pair<String, String>?>(null) } // Elemento seleccionado para mostrar en el diálogo
+
     Box(
         modifier = Modifier
-            .fillMaxSize().verticalScroll(rememberScrollState())
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize().fillMaxWidth()
-                .offset(y = (110).dp) // Scroll vertical para toda la columna
+                .fillMaxSize()
+                .fillMaxWidth()
+                .offset(y = (110).dp)
         ) {
-
             Text(
                 text = "Desliza para ver más eventos",
                 style = MaterialTheme.typography.labelLarge,
@@ -62,19 +74,24 @@ fun MenuAdminContent(viewModel: EventsViewModel = hiltViewModel(), viewModell: C
                 modifier = Modifier.padding(horizontal = 20.dp)
             )
 
-            // Row con scroll horizontal para eventos
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState()) // Scroll horizontal para el Row
+                    .horizontalScroll(rememberScrollState())
                     .padding(bottom = 20.dp),
             ) {
                 events.forEach { event ->
                     CardItem(
                         title = event.title,
                         description = event.description,
-                        vigencia = "Vigencia: "+ event.date,
-                        imageResId = R.drawable.scott
+                        vigencia = "Vigencia: " + event.date,
+                        imageResId = R.drawable.scott,
+                        onEditClick = {
+
+                        },
+                        onDeleteClick = {
+                            viewModel.deleteEvent(event)
+                        }
                     )
                 }
             }
@@ -85,8 +102,6 @@ fun MenuAdminContent(viewModel: EventsViewModel = hiltViewModel(), viewModell: C
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                 modifier = Modifier.padding(horizontal = 20.dp)
             )
-
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -97,7 +112,12 @@ fun MenuAdminContent(viewModel: EventsViewModel = hiltViewModel(), viewModell: C
                         title = coupon.name,
                         description = "Descuento: " + coupon.salePrice.toString(),
                         vigencia = "Vigencia: " + coupon.startDate,
-                        imageResId = R.drawable.jett
+                        imageResId = R.drawable.jett,
+                        onEditClick = {
+                        },
+                        onDeleteClick = {
+                            viewModell.deleteCoupon(coupon)
+                        }
                     )
                 }
             }
@@ -110,14 +130,19 @@ fun CardItem(
     title: String,
     description: String,
     vigencia: String,
-    imageResId: Int = R.drawable.scott // Imagen predeterminada
+    imageResId: Int = R.drawable.scott,
+    onEditClick: () -> Unit,
+    onDeleteClick: () -> Unit
 ) {
+    var showDialog by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .padding(16.dp)
-            .width(180.dp) // Tamaño ajustado para que las tarjetas sean más pequeñas
+            .width(180.dp)
             .height(280.dp)
-            .clip(RoundedCornerShape(16.dp)),
+            .clip(RoundedCornerShape(16.dp))
+            .clickable { showDialog = true },
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
@@ -160,10 +185,107 @@ fun CardItem(
                 style = MaterialTheme.typography.bodyMedium,
                 fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
-                modifier = Modifier.padding(top=4.dp).padding(horizontal = 8.dp)
+                modifier = Modifier.padding(top = 4.dp).padding(horizontal = 8.dp)
             )
+        }
+    }
 
+    if (showDialog) {
+        Dialog(onDismissRequest = { showDialog = false }) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .height(410.dp)
+                    .offset(y = 16.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(
+                        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
+                        shape = RoundedCornerShape(16.dp)
+                    )
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        painter = painterResource(id = imageResId),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(180.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Text(
+                        text = "Detalles de $title",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = description,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    DefaultButton(
+                        text = "Editar",
+                        onClick = {
+                            onEditClick()
+                            showDialog = false
+                        },
+                        icon = R.drawable.edit
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    DefaultButton(
+                        text = "Eliminar",
+                        onClick = {
+                            onDeleteClick()
+                            showDialog = false
+                        },
+                        icon = R.drawable.delete
+                    )
+                }
+            }
         }
     }
 }
+
+@Composable
+fun DefaultButton(text: String, onClick: () -> Unit, icon: Int? = null) {
+    Button(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primary
+        ),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        if (icon != null) {
+            Icon(
+                painter = painterResource(id = icon),
+                contentDescription = null,
+                modifier = Modifier
+                    .width(24.dp)
+                    .height(24.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+        }
+        Text(text = text, style = MaterialTheme.typography.labelLarge, color = Color.White)
+    }
+}
+
 

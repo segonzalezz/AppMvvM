@@ -1,6 +1,7 @@
 package com.segonzalezz.eventsmvvmapp.presentation.components.screens.registerEvents
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -161,6 +162,27 @@ class EventsViewModel @Inject constructor() : ViewModel() {
             onSuccess()
         } catch (e: Exception) {
             onError("Error al crear evento.")
+        }
+    }
+
+    suspend fun editEvent(event: Event, onSuccess: () -> Unit, onError: (String) -> Unit) {
+        try {
+            db.collection("events").document(event.id).set(event).await()
+            loadEvents()
+            onSuccess()
+        } catch (e: Exception) {
+            onError("Error al editar evento: ${e.message}")
+        }
+    }
+
+    fun deleteEvent(event: Event) {
+        viewModelScope.launch {
+            try {
+                db.collection("events").document(event.id).delete().await()
+                loadEvents()
+            } catch (e: Exception) {
+                Log.e("EventsViewModel", "Error al eliminar evento: ${e.message}")
+            }
         }
     }
 

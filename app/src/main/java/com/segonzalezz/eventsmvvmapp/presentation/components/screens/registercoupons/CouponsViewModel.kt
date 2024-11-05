@@ -161,5 +161,26 @@ class CouponsViewModel @Inject constructor(): ViewModel() {
         }
     }
 
+    suspend fun editCoupon(coupon: Coupon, onSuccess: () -> Unit, onError: (String) -> Unit) {
+        try {
+            db.collection("coupons").document(coupon.id).set(coupon).await()
+            loadCoupons()
+            onSuccess()
+        } catch (e: Exception) {
+            onError("Error al editar cupón: ${e.message}")
+        }
+    }
+
+    fun deleteCoupon(coupon: Coupon) {
+        viewModelScope.launch {
+            try {
+                db.collection("coupons").document(coupon.id).delete().await()
+                loadCoupons()
+            } catch (e: Exception) {
+                Log.e("CouponsViewModel", "Error al eliminar cupón: ${e.message}")
+            }
+        }
+    }
+
 
 }
