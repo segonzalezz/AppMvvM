@@ -72,7 +72,7 @@ fun MenuAdminButtonBar(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f))
+                    .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.1f))
             )
         }
 
@@ -276,7 +276,7 @@ fun EventCard(event: Event, isHighlighted: Boolean) {
 fun CouponCard(coupon: Coupon, isHighlighted: Boolean) {
     Card(
         modifier = Modifier
-            .padding(11.dp).padding(horizontal = 11.dp)
+            .padding(11.dp).width(184.dp)
             .shadow(if (isHighlighted) 10.dp else 2.dp, RoundedCornerShape(10.dp)),
         elevation = if (isHighlighted) CardDefaults.cardElevation(8.dp) else CardDefaults.cardElevation(2.dp),
         colors = CardDefaults.cardColors(
