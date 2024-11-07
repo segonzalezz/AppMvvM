@@ -1,6 +1,7 @@
 package com.segonzalezz.eventsmvvmapp.presentation.components.screens.menuadmin.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,7 +17,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -60,7 +63,7 @@ fun MenuAdminButtonBar(
     var searchText by remember { mutableStateOf("") }
     val loading = remember { mutableStateOf(false) }
 
-    
+    // Obtenemos los eventos y cupones desde el ViewModel
     val events by eventViewModel.events.collectAsState(initial = emptyList())
     val coupons by couponViewModel.coupons.collectAsState(initial = emptyList())
 
@@ -100,8 +103,7 @@ fun MenuAdminButtonBar(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 230.dp)
-                    .padding(horizontal = 16.dp)
+                    .padding(top = 230.dp, start = 16.dp, end = 16.dp).offset(y = 60.dp).width(400.dp) // Ajuste de padding
             ) {
                 val filteredEvents = events.filter {
                     it.title.contains(searchText, ignoreCase = true) ||
@@ -111,34 +113,47 @@ fun MenuAdminButtonBar(
                     it.name.contains(searchText, ignoreCase = true) ||
                             it.salePrice.toString().contains(searchText, ignoreCase = true)
                 }
-
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize().padding(horizontal = 80.dp)
-                ) {
-                    item {   Text(text = "Eventos encontrados: ", modifier = Modifier.padding(12.dp))}
-
-                    if (filteredEvents.isNotEmpty()) {
+                // Mostrar eventos filtrados
+                if (filteredEvents.isNotEmpty()) {
+                    Text(
+                        text = "Eventos encontrados",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                    LazyRow(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
                         items(filteredEvents) { event ->
                             val isHighlighted = searchText.isNotEmpty()
                             EventCard(event, isHighlighted = isHighlighted)
                         }
                     }
-
-                    // Mostrar los cupones encontrados
-                    item {   Text(text = "Cupones encontrados: ", modifier = Modifier.padding(12.dp))}
-                    if (filteredCoupons.isNotEmpty()) {
+                }
+                // Mostrar cupones filtrados
+                if (filteredCoupons.isNotEmpty()) {
+                    Text(
+                        text = "Cupones encontrados",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                    LazyRow(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
                         items(filteredCoupons) { coupon ->
                             val isHighlighted = searchText.isNotEmpty()
                             CouponCard(coupon, isHighlighted = isHighlighted)
                         }
                     }
+                }
 
-                    // Mensaje cuando no se encuentran resultados
-                    if (filteredEvents.isEmpty() && filteredCoupons.isEmpty() && searchText.isNotEmpty()) {
-                        item {
-                            Text(text = "No se encontraron resultados", modifier = Modifier.padding(12.dp))
-                        }
-                    }
+                // Mensaje cuando no se encuentran resultados
+                if (filteredEvents.isEmpty() && filteredCoupons.isEmpty() && searchText.isNotEmpty()) {
+                    Text(
+                        text = "No se encontraron resultados",
+                        modifier = Modifier.padding(12.dp),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                    )
                 }
             }
         }
@@ -210,6 +225,7 @@ fun MenuAdminButtonBar(
 }
 
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBar(
@@ -221,7 +237,8 @@ fun SearchBar(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp).offset(y = (120).dp),
+            .padding(horizontal = 8.dp)
+            .offset(y = (120).dp),
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
@@ -278,7 +295,8 @@ fun EventCard(event: Event, isHighlighted: Boolean) {
 fun CouponCard(coupon: Coupon, isHighlighted: Boolean) {
     Card(
         modifier = Modifier
-            .padding(11.dp).width(184.dp)
+            .padding(10.dp)
+            .width(200.dp)
             .shadow(if (isHighlighted) 10.dp else 2.dp, RoundedCornerShape(10.dp)),
         elevation = if (isHighlighted) CardDefaults.cardElevation(8.dp) else CardDefaults.cardElevation(2.dp),
         colors = CardDefaults.cardColors(
