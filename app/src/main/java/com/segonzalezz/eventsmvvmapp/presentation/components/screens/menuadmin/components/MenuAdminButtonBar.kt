@@ -130,10 +130,10 @@ fun MenuAdminButtonBar(
                     Text(
                         text = "Cupones encontrados",
                         style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(vertical = 1.dp, horizontal = 12.dp)
+                        modifier = Modifier.padding(horizontal = 12.dp)
                     )
                     LazyColumn(
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth().offset(y = -12.dp)
                     ) {
                         items(filteredCoupons) { coupon ->
                             CouponCard(coupon, isHighlighted = searchText.isNotEmpty())
@@ -236,9 +236,7 @@ fun SearchBar(
 ) {
     Card(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 1.dp)
-            .offset(y = 24.dp),
+            .offset(y = 24.dp, x = 5.2.dp),
         shape = RoundedCornerShape(1.dp), // Bordes redondeados
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
@@ -274,7 +272,7 @@ fun SearchBar(
                 Icon(
                     painter = painterResource(id = R.drawable.cancel),
                     contentDescription = "Cerrar",
-                    tint = MaterialTheme.colorScheme.error
+                    tint = MaterialTheme.colorScheme.error,
                 )
             }
         }
