@@ -5,6 +5,7 @@ import android.util.Patterns
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -154,5 +155,35 @@ class LoginViewModel @Inject constructor(): ViewModel() {
         }
     }
 
+    fun recoverPassword(
+        email: String,
+        currentPassword: String,
+        newPassword: String,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                val user = auth.currentUser
+                if (user != null) {
+                    // Reautenticación del usuario
+                    val credential = EmailAuthProvider.getCredential(email, currentPassword)
+                    user.reauthenticate(credential).await()
 
+                    // Actualización de la contraseña en Firebase Authentication
+                    user.updatePassword(newPassword).await()
+
+                    // Opcional: Actualización en Firestore
+                    db.collection("users").document(user.uid).update("password", newPassword).await()
+
+                    onSuccess()
+                } else {
+                    onError("No se encontró un usuario autenticado.")
+                }
+            } catch (e: Exception) {
+                Log.e("LoginViewModel", "Error al actualizar contraseña", e)
+                onError("Error al actualizar la contraseña: ${e.localizedMessage}")
+            }
+        }
+    }
 }

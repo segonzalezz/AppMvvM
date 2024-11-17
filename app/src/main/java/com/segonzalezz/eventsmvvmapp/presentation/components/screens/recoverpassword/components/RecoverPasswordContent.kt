@@ -1,5 +1,7 @@
 package com.segonzalezz.eventsmvvmapp.presentation.components.screens.recoverpassword.components
 
+import android.util.Patterns
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -35,76 +37,156 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.segonzalezz.eventsmvvmapp.R
 import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultButton
 import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultTextField
 import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultTextFieldPassword
+import com.segonzalezz.eventsmvvmapp.presentation.components.screens.login.LoginViewModel
 
 @Composable
-fun RecoverPasswordContent(){
+fun RecoverPasswordContent(navController: NavController, viewModel: LoginViewModel = hiltViewModel()) {
     Column(
         modifier = Modifier
-            .fillMaxWidth().verticalScroll(rememberScrollState()),
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState()),
     ) {
         BoxHeader()
-        CardForm()
+        CardForm(viewModel = viewModel, navController = navController)
     }
 }
 
 @Composable
-fun CardForm(){
+fun CardForm(viewModel: LoginViewModel, navController: NavController) {
     var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var currentPassword by remember { mutableStateOf("") }
+    var newPassword by remember { mutableStateOf("") }
     var passwordConfirm by remember { mutableStateOf("") }
+    var errorEmail by remember { mutableStateOf("") }
+    var errorCurrentPassword by remember { mutableStateOf("") }
+    var errorNewPassword by remember { mutableStateOf("") }
+    var errorPasswordConfirm by remember { mutableStateOf("") }
+    val context = LocalContext.current
 
     Card(
         modifier = Modifier
             .padding(start = 40.dp, end = 40.dp)
-            .offset(y = (-90).dp)
+            .offset(y = (-140).dp)
             .fillMaxWidth()
             .wrapContentHeight()
     ) {
-        Column( modifier = Modifier.padding(horizontal = 20.dp)) {
+        Column(modifier = Modifier.padding(horizontal = 20.dp)) {
             Text(
                 text = "Recuperar contraseña: ",
-                modifier = Modifier.padding(top = 20.dp, bottom = 0.dp, start = 0.dp, end = 0.dp),
+                modifier = Modifier.padding(top = 20.dp, bottom = 0.dp),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
             )
-            Text(
-                text = "Por favor ingresar campos:"
-            )
+            Text(text = "Por favor ingresar campos:")
             Spacer(modifier = Modifier.height(16.dp))
-            DefaultTextField(modifier = Modifier
-                .padding()
-                .fillMaxWidth(), value = email, onValueChange = {email = it}, label = "Email", icon = Icons.Default.Email, keyboardType = KeyboardType.Email)
-            Spacer(modifier = Modifier.height(10.dp))
-            Text(text = "Validar email", modifier = Modifier.align(Alignment.End), color = Color.White)
-            Spacer(modifier = Modifier.height(10.dp))
-            DefaultTextFieldPassword(
-                modifier = Modifier
-                    .padding()
-                    .fillMaxWidth(), value = password, onValueChange = {password = it}, label = "Password", icon = Icons.Default.Lock)
-            Spacer(modifier = Modifier.height(10.dp))
-            DefaultTextFieldPassword(
-                modifier = Modifier
-                    .padding()
-                    .fillMaxWidth(), value = password, onValueChange = {password = it}, label = "Confirm password", icon = Icons.Default.Lock)
-            Spacer(modifier = Modifier.height(10.dp))
-            DefaultButton(text = "Cambiar contraseña", onClick = {} )
-        }
 
+            // Campo Email
+            DefaultTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = email,
+                onValueChange = {
+                    email = it
+                    errorEmail = if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) "El correo no es válido" else ""
+                },
+                label = "Email",
+                icon = Icons.Default.Email,
+                keyboardType = KeyboardType.Email,
+                errorMsg = errorEmail
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Campo Contraseña Actual
+            DefaultTextFieldPassword(
+                modifier = Modifier.fillMaxWidth(),
+                value = currentPassword,
+                onValueChange = {
+                    currentPassword = it
+                    errorCurrentPassword = if (currentPassword.isEmpty()) "La contraseña actual es obligatoria" else ""
+                },
+                label = "Contraseña Actual",
+                icon = Icons.Default.Lock,
+                errorMsg = errorCurrentPassword
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Campo Nueva Contraseña
+            DefaultTextFieldPassword(
+                modifier = Modifier.fillMaxWidth(),
+                value = newPassword,
+                onValueChange = {
+                    newPassword = it
+                    errorNewPassword = if (newPassword.length < 6) "La nueva contraseña debe tener al menos 6 caracteres" else ""
+                },
+                label = "Nueva Contraseña",
+                icon = Icons.Default.Lock,
+                errorMsg = errorNewPassword
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Campo Confirmar Nueva Contraseña
+            DefaultTextFieldPassword(
+                modifier = Modifier.fillMaxWidth(),
+                value = passwordConfirm,
+                onValueChange = {
+                    passwordConfirm = it
+                    errorPasswordConfirm = if (passwordConfirm != newPassword) "Las contraseñas no coinciden" else ""
+                },
+                label = "Confirmar Contraseña",
+                icon = Icons.Default.Lock,
+                errorMsg = errorPasswordConfirm
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Botón Cambiar Contraseña
+            DefaultButton(
+                text = "Cambiar contraseña",
+                onClick = {
+                    if (errorEmail.isEmpty() && errorCurrentPassword.isEmpty() && errorPasswordConfirm.isEmpty()) {
+                        viewModel.recoverPassword(
+                            email = email,
+                            currentPassword = currentPassword, // Necesitas agregar este campo en tu Composable
+                            newPassword = newPassword,
+                            onSuccess = {
+                                Toast.makeText(
+                                    context,
+                                    "Contraseña actualizada correctamente",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                navController.popBackStack()
+                            },
+                            onError = { errorMessage ->
+                                Toast.makeText(
+                                    context,
+                                    errorMessage,
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        )
+                    }
+                },
+                enabled = errorEmail.isEmpty() && errorCurrentPassword.isEmpty() && errorPasswordConfirm.isEmpty()
+            )
+
+        }
     }
 }
 
 @Composable
-fun BoxHeader(){
+fun BoxHeader() {
     Box(
         modifier = Modifier
             .height(340.dp)
@@ -114,9 +196,9 @@ fun BoxHeader(){
         Image(
             painterResource(id = R.drawable.trpss),
             contentDescription = null,
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop,
         )
     }
 }
+

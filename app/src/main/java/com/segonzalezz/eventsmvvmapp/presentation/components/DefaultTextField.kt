@@ -33,7 +33,7 @@ fun DefaultTextField(
     hideText: Boolean = false,
     readOnly: Boolean = false,
     trailingIcon: @Composable (() -> Unit)? = null,
-    errorMsg: String = ""
+    errorMsg: String = "",
 ){
     Column {
         OutlinedTextField(

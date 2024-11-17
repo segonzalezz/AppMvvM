@@ -1,5 +1,6 @@
 package com.segonzalezz.eventsmvvmapp.presentation.components.screens.editregister.components
 
+import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -58,6 +59,9 @@ import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultImagePicker
 import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultTextField
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.login.LoginViewModel
 import com.segonzalezz.eventsmvvmapp.presentation.navegation.AppScreens
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun EditRegisterContent(navController: NavController, viewModel: LoginViewModel = hiltViewModel()){
@@ -87,6 +91,26 @@ fun CardForm(viewModel: LoginViewModel = hiltViewModel(), navController: NavCont
         var address by remember { mutableStateOf(user.address) }
         var birthDate by remember { mutableStateOf(user.birthDate) }
 
+        // Detectar cambios en los datos
+        val isButtonEnabled = remember(name, email, username, password, phoneNumber, address, birthDate) {
+            name != user.name ||
+                    email != user.email ||
+                    username != user.username ||
+                    password != user.password ||
+                    phoneNumber != user.phoneNumber ||
+                    address != user.address ||
+                    birthDate != user.birthDate
+        }
+
+        // Variables para los mensajes de error
+        var errorName by remember { mutableStateOf("") }
+        var errorEmail by remember { mutableStateOf("") }
+        var errorUsername by remember { mutableStateOf("") }
+        var errorPassword by remember { mutableStateOf("") }
+        var errorPhoneNumber by remember { mutableStateOf("") }
+        var errorAddress by remember { mutableStateOf("") }
+        var errorBirthDate by remember { mutableStateOf("") }
+
         Card(
             modifier = Modifier
                 .padding(start = 40.dp, end = 40.dp)
@@ -105,75 +129,98 @@ fun CardForm(viewModel: LoginViewModel = hiltViewModel(), navController: NavCont
                 Text(text = "Por favor ingresar campos:")
                 Spacer(modifier = Modifier.height(16.dp))
 
-// Campos editables
+                // Campo Nombre
                 DefaultTextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp), // Se asegura que ocupe todo el ancho disponible
+                    modifier = Modifier.fillMaxWidth(),
                     value = name,
-                    onValueChange = { name = it },
+                    onValueChange = {
+                        name = it
+                        errorName = if (name.isEmpty()) "El nombre no puede estar vacío" else ""
+                    },
                     label = "Nombre",
-                    icon = Icons.Default.Edit
+                    icon = Icons.Default.Edit,
+                    errorMsg = errorName
                 )
                 Spacer(modifier = Modifier.height(10.dp))
 
+                // Campo Email
                 DefaultTextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     value = email,
-                    onValueChange = { email = it },
+                    onValueChange = {
+                        email = it
+                        errorEmail = if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) "El correo no es válido" else ""
+                    },
                     label = "Email",
-                    icon = Icons.Default.Edit
+                    icon = Icons.Default.Edit,
+                    errorMsg = errorEmail
                 )
                 Spacer(modifier = Modifier.height(10.dp))
 
+                // Campo Usuario
                 DefaultTextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     value = username,
-                    onValueChange = { username = it },
+                    onValueChange = {
+                        username = it
+                        errorUsername = if (username.length <= 5) "El usuario debe tener más de 5 caracteres" else ""
+                    },
                     label = "Usuario",
-                    icon = Icons.Default.Edit
+                    icon = Icons.Default.Edit,
+                    errorMsg = errorUsername
                 )
                 Spacer(modifier = Modifier.height(10.dp))
 
+                // Campo Contraseña
                 DefaultTextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     value = password,
                     onValueChange = { password = it },
                     label = "Password",
-                    icon = Icons.Default.Edit
+                    icon = Icons.Default.Edit,
+                    errorMsg = errorPassword,
+                    readOnly = true // Hacer la contraseña no editable
                 )
                 Spacer(modifier = Modifier.height(10.dp))
 
+                // Campo Número
                 DefaultTextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     value = phoneNumber,
-                    onValueChange = { phoneNumber = it },
+                    onValueChange = {
+                        phoneNumber = it
+                        errorPhoneNumber = if (phoneNumber.isEmpty()) "El número no puede estar vacío" else ""
+                    },
                     label = "Número",
-                    icon = Icons.Default.Edit
+                    icon = Icons.Default.Edit,
+                    errorMsg = errorPhoneNumber
                 )
                 Spacer(modifier = Modifier.height(10.dp))
 
+                // Campo Dirección
                 DefaultTextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     value = address,
-                    onValueChange = { address = it },
+                    onValueChange = {
+                        address = it
+                        errorAddress = if (address.isEmpty()) "La dirección no puede estar vacía" else ""
+                    },
                     label = "Dirección",
-                    icon = Icons.Default.Edit
+                    icon = Icons.Default.Edit,
+                    errorMsg = errorAddress
                 )
                 Spacer(modifier = Modifier.height(14.dp))
 
+                // Campo Fecha de nacimiento
                 Text(text = "Fecha nacimiento:")
-                DefaultDatePickerDocked(initialDate = birthDate,onDateSelected = { birthDate = it })
+                DefaultDatePickerDocked(
+                    initialDate = birthDate,
+                    onDateSelected = { newDate ->
+                        birthDate = newDate
+                        errorBirthDate = if (!isAdult(newDate)) "Debes ser mayor de 18 años" else ""
+                    },
+                    errorMsg = errorBirthDate
+                )
                 Spacer(modifier = Modifier.height(10.dp))
 
                 // Botón para guardar los cambios
@@ -193,38 +240,43 @@ fun CardForm(viewModel: LoginViewModel = hiltViewModel(), navController: NavCont
                                 role = user.role
                             ),
                             onSuccess = { role ->
-                                // Mostrar Toast
                                 Toast.makeText(
                                     context,
                                     "Datos actualizados correctamente",
                                     Toast.LENGTH_SHORT
                                 ).show()
 
-                                // Navegación basada en el rol
                                 if (role == "ADMIN") {
                                     navController.navigate(AppScreens.MenuAdminScreen.route) {
                                         popUpTo(AppScreens.EditRegisterScreen.route) { inclusive = true }
                                     }
                                 } else if (role == "USER") {
-                                    navController.navigate(AppScreens.MenUserScreen.route
-                                    ) {
+                                    navController.navigate(AppScreens.MenUserScreen.route) {
                                         popUpTo(AppScreens.EditRegisterScreen.route) { inclusive = true }
                                     }
                                 }
                             },
                             onError = { errorMessage ->
-                                Toast.makeText(
-                                    context,
-                                    errorMessage,
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
                             }
                         )
-                    }
+                    },
+                    enabled = isButtonEnabled // Habilitar o deshabilitar el botón
                 )
             }
         }
     }
+}
+
+
+// Función para validar si un usuario es mayor de edad
+fun isAdult(birthDate: String): Boolean {
+    val formatter = SimpleDateFormat("MM/dd/yyyy", Locale.getDefault())
+    val birth = formatter.parse(birthDate)
+    val today = Date()
+    val diff = today.time - birth.time
+    val age = diff / (1000L * 60 * 60 * 24 * 365)
+    return age >= 18
 }
 
 
