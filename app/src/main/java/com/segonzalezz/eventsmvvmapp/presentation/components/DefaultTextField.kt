@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun DefaultTextField(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,
     validateField:()->Unit = { },

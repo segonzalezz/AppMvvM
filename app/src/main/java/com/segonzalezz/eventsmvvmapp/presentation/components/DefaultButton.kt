@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun DefaultButton(
     text:String,
-    onClick:() ->  Unit,
+    onClick: () ->  Unit,
     color : Color = Color.Cyan,
     enabled: Boolean = true
 ){

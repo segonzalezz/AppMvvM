@@ -1,5 +1,6 @@
 package com.segonzalezz.eventsmvvmapp.presentation.components.screens.login
 
+import android.util.Log
 import android.util.Patterns
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
@@ -8,6 +9,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.segonzalezz.eventsmvvmapp.model.Role
+import com.segonzalezz.eventsmvvmapp.model.User
 import com.segonzalezz.eventsmvvmapp.presentation.navegation.AppScreens
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -18,7 +20,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(): ViewModel() {
     val db = Firebase.firestore
     val auth = Firebase.auth
-
+    var userData: MutableState<User?> = mutableStateOf(null)
     val startDestination = mutableStateOf(AppScreens.LoginScreen.route)
 
     init {
@@ -112,5 +114,45 @@ class LoginViewModel @Inject constructor(): ViewModel() {
                 }
             }
         }
+    fun fetchUserData() {
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            viewModelScope.launch {
+                try {
+                    val snapshot = db.collection("users")
+                        .document(currentUser.uid)
+                        .get()
+                        .await()
+
+                    userData.value = snapshot.toObject(User::class.java) // Convierte el documento a un objeto User
+                } catch (e: Exception) {
+                    Log.e("LoginViewModel", "Error al obtener datos del usuario", e)
+                }
+            }
+        }
+    }
+
+    fun updateUserData(
+        updatedUser: User,
+        onSuccess: (String) -> Unit,
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            try {
+                db.collection("users")
+                    .document(updatedUser.id)
+                    .set(updatedUser)
+                    .await()
+
+                userData.value = updatedUser // Actualiza el estado local
+                Log.d("LoginViewModel", "Datos actualizados correctamente")
+                onSuccess(updatedUser.role.toString()) // Pasa el rol del usuario al callback de éxito
+            } catch (e: Exception) {
+                Log.e("LoginViewModel", "Error al actualizar los datos", e)
+                onError("Error al actualizar los datos: ${e.message}")
+            }
+        }
+    }
+
 
 }

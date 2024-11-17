@@ -54,7 +54,7 @@ fun AppNavigation(navController: NavHostController, viewModel: LoginViewModel = 
             MenUserScreen(navController)
         }
         composable(route = AppScreens.EditRegisterScreen.route) {
-            EditRegisterScreen()
+            EditRegisterScreen(navController)
         }
         composable(route = AppScreens.MenuCuponScreen.route) {
             MenuCuponScreen()

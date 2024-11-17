@@ -256,9 +256,8 @@ fun SearchBar(
             TextField(
                 value = searchText,
                 onValueChange = onTextChange,
-                placeholder = { Text("Buscar eventos o cupones....") },
+                placeholder = { Text("Buscar eventos o cupones") },
                 modifier = Modifier
-                    .weight(2f)
                     .padding(vertical = 4.dp),
                 colors = TextFieldDefaults.textFieldColors(
                     cursorColor = MaterialTheme.colorScheme.onSurface,
