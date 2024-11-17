@@ -76,6 +76,18 @@ fun CardForm(viewModel: LoginViewModel, navController: NavController) {
     var errorPasswordConfirm by remember { mutableStateOf("") }
     val context = LocalContext.current
 
+    // Verificar si todos los campos son válidos
+    val isFormValid = remember(email, currentPassword, newPassword, passwordConfirm, errorEmail, errorCurrentPassword, errorNewPassword, errorPasswordConfirm) {
+        email.isNotBlank() &&
+                errorEmail.isEmpty() &&
+                currentPassword.isNotBlank() &&
+                errorCurrentPassword.isEmpty() &&
+                newPassword.isNotBlank() &&
+                errorNewPassword.isEmpty() &&
+                passwordConfirm.isNotBlank() &&
+                errorPasswordConfirm.isEmpty()
+    }
+
     Card(
         modifier = Modifier
             .padding(start = 40.dp, end = 40.dp)
@@ -155,10 +167,10 @@ fun CardForm(viewModel: LoginViewModel, navController: NavController) {
             DefaultButton(
                 text = "Cambiar contraseña",
                 onClick = {
-                    if (errorEmail.isEmpty() && errorCurrentPassword.isEmpty() && errorPasswordConfirm.isEmpty()) {
+                    if (isFormValid) {
                         viewModel.recoverPassword(
                             email = email,
-                            currentPassword = currentPassword, // Necesitas agregar este campo en tu Composable
+                            currentPassword = currentPassword,
                             newPassword = newPassword,
                             onSuccess = {
                                 Toast.makeText(
@@ -178,12 +190,12 @@ fun CardForm(viewModel: LoginViewModel, navController: NavController) {
                         )
                     }
                 },
-                enabled = errorEmail.isEmpty() && errorCurrentPassword.isEmpty() && errorPasswordConfirm.isEmpty()
+                enabled = isFormValid // Solo se habilita si el formulario es válido
             )
-
         }
     }
 }
+
 
 @Composable
 fun BoxHeader() {
