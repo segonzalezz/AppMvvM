@@ -14,7 +14,7 @@ import com.segonzalezz.eventsmvvmapp.presentation.components.screens.menuadmin.c
 fun MenuAdminScreen(navController: NavHostController){
     Scaffold(
         topBar = {MenuTopBarMenu(navController)},
-        content = {MenuAdminContent()},
+        content = {MenuAdminContent(navController = navController)},
         bottomBar = {MenuAdminButtonBar(navController)}
     )
 }

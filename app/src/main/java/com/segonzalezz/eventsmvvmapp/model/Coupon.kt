@@ -1,5 +1,7 @@
 package com.segonzalezz.eventsmvvmapp.model
 
+import java.io.Serializable
+
 data class Coupon(
     var id: String = "",
     val name: String = "",
@@ -7,4 +9,4 @@ data class Coupon(
     val startDate: String = "",
     val endDate: String = "",
     val salePrice: Int = 0,
-)
+) : Serializable

@@ -53,6 +53,7 @@ import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultDropdownMenu
 import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultSliderMinimal
 import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultTextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
@@ -66,7 +67,20 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun RegisterEventsContent(navController: NavHostController){
+fun RegisterEventsContent(navController: NavHostController, viewModel: EventsViewModel = hiltViewModel()){
+    val selectedEvent by remember { viewModel.selectedEvent }
+
+    LaunchedEffect(selectedEvent) {
+        selectedEvent?.let { event ->
+            viewModel.title.value = event.title
+            viewModel.description.value = event.description
+            viewModel.date.value = event.date
+            viewModel.address.value = event.address
+            viewModel.city.value = event.city
+            viewModel.locations.value = event.locations
+            viewModel.type.value = event.type
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()

@@ -25,6 +25,7 @@ class EventsViewModel @Inject constructor() : ViewModel() {
 
     private val _events = MutableStateFlow(emptyList<Event>())
     val events: StateFlow<List<Event>> = _events.asStateFlow()
+    var selectedEvent: MutableState<Event?> = mutableStateOf(null)
 
     init {
         loadEvents()
@@ -186,4 +187,7 @@ class EventsViewModel @Inject constructor() : ViewModel() {
         }
     }
 
+    fun setSelectedEvent(event: Event?) {
+        selectedEvent.value = event
+    }
 }

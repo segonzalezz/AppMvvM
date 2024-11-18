@@ -1,5 +1,6 @@
 package com.segonzalezz.eventsmvvmapp.presentation.components.screens.menuadmin.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -44,13 +45,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.registerEvents.EventsViewModel
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.registercoupons.CouponsViewModel
+import com.segonzalezz.eventsmvvmapp.presentation.navegation.AppScreens
 
 @Composable
 fun MenuAdminContent(
     viewModel: EventsViewModel = hiltViewModel(),
-    viewModell: CouponsViewModel = hiltViewModel()
+    viewModell: CouponsViewModel = hiltViewModel(),
+    navController: NavHostController
 ) {
     val events by viewModel.events.collectAsState()
     val coupons by viewModell.coupons.collectAsState()
@@ -86,8 +90,11 @@ fun MenuAdminContent(
                         description = event.description,
                         vigencia = "Vigencia: " + event.date,
                         imageResId = R.drawable.scott,
+                        itemType = ItemType.EVENT,
                         onEditClick = {
-
+                            Log.d("RRRRR", "Seleccionado evento: ")
+                            viewModel.setSelectedEvent(event)
+                            navController.navigate(AppScreens.RegisterEventsScreen.route)
                         },
                         onDeleteClick = {
                             viewModel.deleteEvent(event)
@@ -113,7 +120,11 @@ fun MenuAdminContent(
                         description = "Descuento: " + coupon.salePrice.toString(),
                         vigencia = "Vigencia: " + coupon.startDate,
                         imageResId = R.drawable.jett,
+                        itemType = ItemType.COUPON,
                         onEditClick = {
+                            Log.d("rRRRRR", "Seleccionado cupón: ${coupon.name}")
+                            navController.currentBackStackEntry?.savedStateHandle?.set("selectedCoupon", coupon) // Guardar cupón en el estado
+                            navController.navigate(AppScreens.EditCouponScreen.route)
                         },
                         onDeleteClick = {
                             viewModell.deleteCoupon(coupon)
@@ -125,12 +136,18 @@ fun MenuAdminContent(
     }
 }
 
+enum class ItemType {
+    EVENT,
+    COUPON
+}
+
 @Composable
 fun CardItem(
     title: String,
     description: String,
     vigencia: String,
     imageResId: Int = R.drawable.scott,
+    itemType: ItemType,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit
 ) {

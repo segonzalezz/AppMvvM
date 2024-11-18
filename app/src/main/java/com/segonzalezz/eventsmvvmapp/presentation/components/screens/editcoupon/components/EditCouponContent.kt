@@ -1,50 +1,21 @@
-package com.segonzalezz.eventsmvvmapp.presentation.components.screens.registercoupons.components
+package com.segonzalezz.eventsmvvmapp.presentation.components.screens.editcoupon.components
 
+import android.annotation.SuppressLint
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
-import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.MailOutline
-import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -59,48 +30,60 @@ import com.segonzalezz.eventsmvvmapp.R
 import com.segonzalezz.eventsmvvmapp.model.Coupon
 import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultButton
 import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultDatePickerDocked
-import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultDropdownMenu
-import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultSliderMinimal
 import com.segonzalezz.eventsmvvmapp.presentation.components.DefaultTextField
-import com.segonzalezz.eventsmvvmapp.presentation.components.screens.registerEvents.EventsViewModel
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.registercoupons.CouponsViewModel
-import com.segonzalezz.eventsmvvmapp.presentation.navegation.AppScreens
 import kotlinx.coroutines.launch
 
-
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun RegisterCouponsContent(navController: NavHostController, viewModel: CouponsViewModel = hiltViewModel()){
+fun EditCouponContent(navController: NavHostController, viewModel: CouponsViewModel = hiltViewModel()) {
+    LaunchedEffect(Unit) {
+        val coupon = navController.previousBackStackEntry?.savedStateHandle?.get<Coupon>("selectedCoupon")
+        coupon?.let {
+            Log.d("DEBUG", "Recibiendo cupón desde el estado: ${it.startDate}, ${it.endDate}")
+            viewModel.setSelectedCoupon(it)
+
+            // Cargar los datos del cupón en el ViewModel
+            viewModel.name.value = it.name
+            viewModel.stock.value = it.stock.toString()
+            viewModel.startDate.value = it.startDate // Asignar la fecha de inicio
+            viewModel.endDate.value = it.endDate // Asignar la fecha de fin
+            viewModel.salePrice.value = it.salePrice.toString()
+
+            // Establecer datos iniciales para verificar cambios
+            viewModel.initializeOriginalValues(it)
+        } ?: Log.d("DEBUG", "No se encontró cupón en savedStateHandle")
+    }
+
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState()),
     ) {
         BoxHeader()
-        CardForm(navController)
+        CardForm(navController, viewModel)
     }
 }
 
 @Composable
-fun BoxHeader(){
+fun BoxHeader() {
     Box(
         modifier = Modifier
             .height(280.dp)
             .fillMaxWidth()
-            .clip(RoundedCornerShape(0.dp))
     ) {
         Image(
             painterResource(id = R.drawable.jett),
             contentDescription = null,
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop,
         )
-
     }
 }
 
 @Composable
-fun CardForm(navController: NavHostController, viewModel: CouponsViewModel = hiltViewModel()) {
+fun CardForm(navController: NavHostController, viewModel: CouponsViewModel) {
     val context = LocalContext.current
 
     Card(
@@ -112,104 +95,113 @@ fun CardForm(navController: NavHostController, viewModel: CouponsViewModel = hil
     ) {
         Column(modifier = Modifier.padding(horizontal = 20.dp)) {
             Text(
-                text = "Crear Cupón: ",
+                text = "Editar Cupón",
                 modifier = Modifier.padding(top = 20.dp, bottom = 0.dp),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = MaterialTheme.colorScheme.onSurface
             )
-            Text(text = "Por favor ingresar campos:")
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Nombre del Cupón
+            // Campo: Nombre del Cupón
             DefaultTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = viewModel.name.value,
                 onValueChange = {
                     viewModel.name.value = it
-                    viewModel.validateName()
+                    viewModel.checkForChanges()
                 },
-                label = "Nombre",
+                label = "Nombre del Cupón",
                 icon = Icons.Default.Info,
                 keyboardType = KeyboardType.Text,
                 errorMsg = viewModel.nameErrorMsg.value
             )
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Stock del Cupón
+            // Campo: Stock del Cupón
             DefaultTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = viewModel.stock.value,
                 onValueChange = {
                     viewModel.stock.value = it
-                    viewModel.validateStock()
+                    viewModel.checkForChanges()
                 },
-                label = "Stock del Cupón",
+                label = "Stock",
                 icon = Icons.Default.Info,
                 keyboardType = KeyboardType.Number,
                 errorMsg = viewModel.stockErrorMsg.value
             )
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Fecha de Inicio del Cupón
-            Text(text = "Fecha de Inicio:", color = Color.White)
-            DefaultDatePickerDocked(
+            Log.d("fecha", "Fecha de Inicio: ${viewModel.startDate.value}")
+            Log.d("fecha", "Fecha de Fin: ${viewModel.endDate.value}")
+
+            // Campo: Fecha de Inicio
+            Text(text = "Fecha de Inicio", color = MaterialTheme.colorScheme.onSurface)
+            LaunchedEffect(viewModel.startDate.value) {
+                Log.d("2", "Sincronizando fecha de inicio: ${viewModel.startDate.value}")
+            }
+            CustomDateField(
+                initialDate = viewModel.startDate.value,
                 onDateSelected = {
                     viewModel.startDate.value = it
-                    viewModel.validateDates()
+                    viewModel.checkForChanges()
                 },
                 errorMsg = viewModel.startDateErrorMsg.value
             )
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-            // Fecha de Fin del Cupón
-            Text(text = "Fecha Fin:", color = Color.White)
-            DefaultDatePickerDocked(
+            // Campo: Fecha de Fin
+            Text(text = "Fecha de Fin", color = MaterialTheme.colorScheme.onSurface)
+            LaunchedEffect(viewModel.endDate.value) {
+                Log.d("1", "Sincronizando fecha de fin: ${viewModel.endDate.value}")
+            }
+            CustomDateField(
+                initialDate = viewModel.endDate.value,
                 onDateSelected = {
                     viewModel.endDate.value = it
-                    viewModel.validateDates()
+                    viewModel.checkForChanges()
                 },
                 errorMsg = viewModel.endDateErrorMsg.value
             )
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-            // Precio de Descuento del Cupón
+            // Campo: Precio de Descuento
             DefaultTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = viewModel.salePrice.value,
                 onValueChange = {
                     viewModel.salePrice.value = it
-                    viewModel.validateSalePrice()
+                    viewModel.checkForChanges()
                 },
-                label = "Precio Descuento Cupon",
+                label = "Precio Descuento",
                 icon = Icons.Default.Info,
                 keyboardType = KeyboardType.Number,
                 errorMsg = viewModel.salePriceErrorMsg.value
             )
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // Botón para Crear Cupón
+            // Botón: Guardar Cambios
             DefaultButton(
-                text = "Crear",
-                enabled = viewModel.isEnabledCreateCouponButton,
+                text = "Guardar Cambios",
+                enabled = viewModel.isSaveButtonEnabled.value,
                 onClick = {
                     viewModel.viewModelScope.launch {
-                        val newCoupon = Coupon(
+                        val updatedCoupon = Coupon(
+                            id = viewModel.selectedCoupon.value?.id ?: "",
                             name = viewModel.name.value,
-                            stock = viewModel.stock.value.toInt(),
+                            stock = viewModel.stock.value.toIntOrNull() ?: 0,
                             startDate = viewModel.startDate.value,
                             endDate = viewModel.endDate.value,
-                            salePrice = viewModel.salePrice.value.toInt()
+                            salePrice = viewModel.salePrice.value.toIntOrNull() ?: 0
                         )
-                        viewModel.createCoupon(newCoupon,
+                        viewModel.editCoupon(updatedCoupon,
                             onSuccess = {
-                                Toast.makeText(context, "Cupón creado exitosamente", Toast.LENGTH_LONG).show()
-                                navController.navigate(AppScreens.MenuAdminScreen.route) {
-                                    popUpTo(AppScreens.RegisterCouponsScreen.route) { inclusive = true }
-                                }
+                                Toast.makeText(context, "Cupón actualizado exitosamente", Toast.LENGTH_LONG).show()
+                                navController.navigateUp() // Volver a la pantalla anterior
                             },
                             onError = { message ->
-                                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                                Toast.makeText(context, "Error al actualizar: $message", Toast.LENGTH_LONG).show()
                             }
                         )
                     }
@@ -217,4 +209,17 @@ fun CardForm(navController: NavHostController, viewModel: CouponsViewModel = hil
             )
         }
     }
+}
+
+@Composable
+fun CustomDateField(
+    initialDate: String,
+    onDateSelected: (String) -> Unit,
+    errorMsg: String = ""
+) {
+    DefaultDatePickerDocked(
+        initialDate = initialDate,
+        onDateSelected = onDateSelected,
+        errorMsg = errorMsg
+    )
 }

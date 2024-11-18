@@ -4,10 +4,13 @@ import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.State
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.segonzalezz.eventsmvvmapp.model.Coupon
+import com.segonzalezz.eventsmvvmapp.model.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,6 +24,14 @@ class CouponsViewModel @Inject constructor(): ViewModel() {
 
     private val _coupons = MutableStateFlow(emptyList<Coupon>())
     val coupons: StateFlow<List<Coupon>> = _coupons.asStateFlow()
+    private val _selectedCoupon = MutableStateFlow<Coupon?>(null)
+    val selectedCoupon: StateFlow<Coupon?> = _selectedCoupon.asStateFlow()
+
+    private val originalName = mutableStateOf("")
+    private val originalStock = mutableStateOf("")
+    private val originalStartDate = mutableStateOf("")
+    private val originalEndDate = mutableStateOf("")
+    private val originalSalePrice = mutableStateOf("")
 
     init {
         loadCoupons()
@@ -182,5 +193,26 @@ class CouponsViewModel @Inject constructor(): ViewModel() {
         }
     }
 
+    fun setSelectedCoupon(coupon: Coupon?) {
+        Log.d("DEBUG", "Estableciendo cupón seleccionado: ${coupon?.name}")
+        _selectedCoupon.value = coupon
+    }
 
+    val isSaveButtonEnabled = mutableStateOf(false)
+
+    fun initializeOriginalValues(coupon: Coupon) {
+        originalName.value = coupon.name
+        originalStock.value = coupon.stock.toString()
+        originalStartDate.value = coupon.startDate
+        originalEndDate.value = coupon.endDate
+        originalSalePrice.value = coupon.salePrice.toString()
+    }
+
+    fun checkForChanges() {
+        isSaveButtonEnabled.value = name.value != originalName.value ||
+                stock.value != originalStock.value ||
+                startDate.value != originalStartDate.value ||
+                endDate.value != originalEndDate.value ||
+                salePrice.value != originalSalePrice.value
+    }
 }

@@ -153,7 +153,8 @@ fun CardForm(viewModel: LoginViewModel = hiltViewModel(), navController: NavCont
                     },
                     label = "Email",
                     icon = Icons.Default.Edit,
-                    errorMsg = errorEmail
+                    errorMsg = errorEmail,
+                    readOnly = true
                 )
                 Spacer(modifier = Modifier.height(10.dp))
 
