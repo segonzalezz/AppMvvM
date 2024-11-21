@@ -94,7 +94,8 @@ fun MenuAdminContent(
                         onEditClick = {
                             Log.d("RRRRR", "Seleccionado evento: ")
                             viewModel.setSelectedEvent(event)
-                            navController.navigate(AppScreens.RegisterEventsScreen.route)
+                            navController.currentBackStackEntry?.savedStateHandle?.set("selectedEvent", event)
+                            navController.navigate(AppScreens.EditEventScreen.route)
                         },
                         onDeleteClick = {
                             viewModel.deleteEvent(event)

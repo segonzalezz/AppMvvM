@@ -14,6 +14,7 @@ import androidx.navigation.compose.composable
 import com.segonzalezz.eventsmvvmapp.data.SharedPreferencesManager
 import com.segonzalezz.eventsmvvmapp.model.Role
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.editcoupon.EditCouponScreen
+import com.segonzalezz.eventsmvvmapp.presentation.components.screens.editevent.EditEventScreen
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.editregister.EditRegisterScreen
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.login.LoginScreen
 import com.segonzalezz.eventsmvvmapp.presentation.components.screens.login.LoginViewModel
@@ -63,6 +64,8 @@ fun AppNavigation(navController: NavHostController, viewModel: LoginViewModel = 
         composable(route = AppScreens.MenuCuponScreen.route) {
             MenuCuponScreen()
         }
-
+        composable(route = AppScreens.EditEventScreen.route) {
+            EditEventScreen(navController)
+        }
     }
 }

@@ -10,6 +10,7 @@ sealed class AppScreens (val route: String){
     object MenUserScreen : AppScreens("MenUserScreen")
     object EditCouponScreen : AppScreens("EditCouponScreen")
     object MenuCuponScreen : AppScreens("MenuCuponScreen")
+    object EditEventScreen : AppScreens("EditEventScreen")
 
 
 }

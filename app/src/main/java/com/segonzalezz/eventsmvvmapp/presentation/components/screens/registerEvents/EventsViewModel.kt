@@ -48,11 +48,29 @@ class EventsViewModel @Inject constructor() : ViewModel() {
     var cityErrorMsg: MutableState<String> = mutableStateOf("")
     var isEnabledCreateEventButton: MutableState<Boolean> = mutableStateOf(false)
 
+    private var originalTitle: String = ""
+    private var originalDescription: String = ""
+    private var originalDate: String = ""
+    private var originalAddress: String = ""
+    private var originalCity: String = ""
+    private var originalType: EventType = EventType.DEFAULT
+    private var originalLocations: List<Location> = emptyList()
+
+    fun initializeOriginalValues(event: Event) {
+        originalTitle = event.title
+        originalDescription = event.description
+        originalDate = event.date
+        originalAddress = event.address
+        originalCity = event.city
+        originalType = event.type
+        originalLocations = event.locations
+    }
+
     init {
         loadEvents()
     }
 
-    private fun updateButtonStatee() {
+    fun updateButtonStatee() {
         isEnabledCreateEventButton.value = validateFields()
     }
 
@@ -111,19 +129,6 @@ class EventsViewModel @Inject constructor() : ViewModel() {
     }
 
     // Establecer el evento seleccionado
-    fun setSelectedEvent(event: Event?) {
-        selectedEvent.value = event
-        event?.let {
-            title.value = it.title
-            description.value = it.description
-            date.value = it.date
-            address.value = it.address
-            city.value = it.city
-            type.value = it.type
-            locations.value = it.locations.toMutableList()
-        }
-        validateFields()
-    }
 
     // Agregar una nueva ubicación
     fun addLocation() {
@@ -233,6 +238,31 @@ class EventsViewModel @Inject constructor() : ViewModel() {
                 addressErrorMsg.value.isEmpty() &&
                 cityErrorMsg.value.isEmpty() &&
                 locations.value.isNotEmpty()
+    }
+
+    fun setSelectedEvent(event: Event?) {
+        selectedEvent.value = event
+        event?.let {
+            title.value = it.title
+            description.value = it.description
+            date.value = it.date
+            address.value = it.address
+            city.value = it.city
+            type.value = it.type
+            locations.value = it.locations.toMutableList()
+            initializeOriginalValues(it) // Inicializar valores originales
+        }
+    }
+
+
+    fun hasChanges(): Boolean {
+        return title.value != originalTitle ||
+                description.value != originalDescription ||
+                date.value != originalDate ||
+                address.value != originalAddress ||
+                city.value != originalCity ||
+                type.value != originalType ||
+                locations.value != originalLocations
     }
 
 

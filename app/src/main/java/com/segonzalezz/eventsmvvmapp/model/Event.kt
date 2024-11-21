@@ -1,5 +1,7 @@
 package com.segonzalezz.eventsmvvmapp.model
 
+import java.io.Serializable
+
 data class Event(
     var id: String = "",
     val title: String = "",
@@ -10,4 +12,4 @@ data class Event(
     val locations: List<Location> = listOf(),
     val type: EventType = EventType.DEFAULT,
     val imagUrl: String = "",
-)
+): Serializable
