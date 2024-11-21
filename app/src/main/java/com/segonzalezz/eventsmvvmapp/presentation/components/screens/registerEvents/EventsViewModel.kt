@@ -38,6 +38,7 @@ class EventsViewModel @Inject constructor() : ViewModel() {
     var city: MutableState<String> = mutableStateOf("")
     var type: MutableState<EventType> = mutableStateOf(EventType.DEFAULT)
     var locations: MutableState<MutableList<Location>> = mutableStateOf(mutableListOf())
+    private var nextLocationId = 1
 
     // Estados de validación y errores
     var titleErrorMsg: MutableState<String> = mutableStateOf("")
@@ -49,6 +50,10 @@ class EventsViewModel @Inject constructor() : ViewModel() {
 
     init {
         loadEvents()
+    }
+
+    private fun updateButtonStatee() {
+        isEnabledCreateEventButton.value = validateFields()
     }
 
     // Cargar eventos desde Firestore
@@ -69,8 +74,9 @@ class EventsViewModel @Inject constructor() : ViewModel() {
     fun createEvent(event: Event, onSuccess: () -> Unit, onError: (String) -> Unit) {
         viewModelScope.launch {
             try {
-                val docRef = db.collection("events").add(event).await()
+                val docRef = db.collection("events").document()
                 event.id = docRef.id
+                docRef.set(event).await()
                 loadEvents()
                 onSuccess()
             } catch (e: Exception) {
@@ -121,17 +127,23 @@ class EventsViewModel @Inject constructor() : ViewModel() {
 
     // Agregar una nueva ubicación
     fun addLocation() {
-        // Aseguramos que las ubicaciones se actualicen correctamente
-        val updatedLocations = locations.value.toMutableList()
-        updatedLocations.add(Location())
-        locations.value = updatedLocations
+        if (nextLocationId <= 100) { // Limitar los IDs a 100
+            val newLocation = Location(id = nextLocationId.toString())
+            val updatedLocations = locations.value.toMutableList()
+            updatedLocations.add(newLocation)
+            locations.value = updatedLocations
+            nextLocationId++ // Incrementar el ID para la próxima ubicación
+        } else {
+            Log.e("EventsViewModel", "No se pueden agregar más de 100 ubicaciones.")
+        }
     }
-
 
     // Actualizar una ubicación específica
     fun updateLocation(index: Int, updatedLocation: Location) {
         if (index in locations.value.indices) {
-            locations.value[index] = updatedLocation
+            val updatedLocations = locations.value.toMutableList()
+            updatedLocations[index] = updatedLocation
+            locations.value = updatedLocations
         }
     }
 
@@ -144,6 +156,10 @@ class EventsViewModel @Inject constructor() : ViewModel() {
         }
     }
 
+    // Resetear IDs si es necesario
+    fun resetLocationIds() {
+        nextLocationId = 1
+    }
 
     fun validateLocations(): Boolean {
         return locations.value.all { location ->
@@ -218,4 +234,6 @@ class EventsViewModel @Inject constructor() : ViewModel() {
                 cityErrorMsg.value.isEmpty() &&
                 locations.value.isNotEmpty()
     }
+
+
 }

@@ -131,7 +131,7 @@ fun CardForm(navController: NavHostController, viewModel: EventsViewModel) {
                 value = viewModel.title.value,
                 onValueChange = {
                     viewModel.title.value = it
-                    viewModel.validateFields()
+                    viewModel.validateTitle()
                 },
                 label = "Nombre del Evento",
                 icon = Icons.Default.Info,
@@ -145,7 +145,7 @@ fun CardForm(navController: NavHostController, viewModel: EventsViewModel) {
                 value = viewModel.description.value,
                 onValueChange = {
                     viewModel.description.value = it
-                    viewModel.validateFields()
+                    viewModel.validateDescription()
                 },
                 label = "Descripción del Evento",
                 icon = Icons.Default.Info,
@@ -159,7 +159,7 @@ fun CardForm(navController: NavHostController, viewModel: EventsViewModel) {
                 initialDate = viewModel.date.value,
                 onDateSelected = {
                     viewModel.date.value = it
-                    viewModel.validateFields()
+                    viewModel.validateDate()
                 },
                 errorMsg = viewModel.dateErrorMsg.value
             )
@@ -171,7 +171,7 @@ fun CardForm(navController: NavHostController, viewModel: EventsViewModel) {
                 value = viewModel.address.value,
                 onValueChange = {
                     viewModel.address.value = it
-                    viewModel.validateFields()
+                    viewModel.validateLocations()
                 },
                 label = "Ubicación",
                 icon = Icons.Default.LocationOn,
@@ -185,7 +185,7 @@ fun CardForm(navController: NavHostController, viewModel: EventsViewModel) {
                 value = viewModel.city.value,
                 onValueChange = {
                     viewModel.city.value = it
-                    viewModel.validateFields()
+                    viewModel.validateCity()
                 },
                 label = "Ciudad",
                 icon = Icons.Default.LocationOn,
@@ -194,7 +194,7 @@ fun CardForm(navController: NavHostController, viewModel: EventsViewModel) {
             Spacer(modifier = Modifier.height(5.dp))
 
             // Ubicaciones del Evento con Asientos
-            Text("Ubicaciones del Evento:", color = Color.White)
+            Text("Detalles del Evento:", color = Color.White)
             viewModel.locations.value.forEachIndexed { index, location ->
                 LocationWithSeats(
                     location = location,
@@ -232,7 +232,7 @@ fun CardForm(navController: NavHostController, viewModel: EventsViewModel) {
             // Botón para Crear Evento
             DefaultButton(
                 text = "Crear",
-                enabled = true, // Siempre habilitado para permitir la validación al hacer clic
+                enabled = viewModel.isEnabledCreateEventButton.value, // Siempre habilitado para permitir la validación al hacer clic
                 onClick = {
                     if (viewModel.validateFields()) {
                         viewModel.createEvent(
@@ -276,7 +276,9 @@ fun LocationWithSeats(
     Column(modifier = Modifier.padding(vertical = 8.dp)) {
         DefaultTextField(
             value = location.name,
-            onValueChange = { newName -> onUpdate(location.copy(name = newName)) },
+            onValueChange = { newName ->
+                onUpdate(location.copy(name = newName))
+            },
             label = "Nombre de la Ubicación",
             icon = Icons.Default.Info,
             errorMsg = if (showErrors && location.name.isBlank()) "El nombre no puede estar vacío" else ""
@@ -312,6 +314,7 @@ fun LocationWithSeats(
         }
     }
 }
+
 
 
 
