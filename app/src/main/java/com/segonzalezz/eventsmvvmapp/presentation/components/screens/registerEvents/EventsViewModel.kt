@@ -48,6 +48,7 @@ class EventsViewModel @Inject constructor() : ViewModel() {
     var cityErrorMsg: MutableState<String> = mutableStateOf("")
     var isEnabledCreateEventButton: MutableState<Boolean> = mutableStateOf(false)
 
+
     private var originalTitle: String = ""
     private var originalDescription: String = ""
     private var originalDate: String = ""
@@ -197,6 +198,7 @@ class EventsViewModel @Inject constructor() : ViewModel() {
         } else {
             ""
         }
+        updateCreateEventButtonState()
     }
 
     fun validateDescription() {
@@ -205,6 +207,7 @@ class EventsViewModel @Inject constructor() : ViewModel() {
         } else {
             ""
         }
+        updateCreateEventButtonState()
     }
 
     fun validateDate() {
@@ -213,6 +216,7 @@ class EventsViewModel @Inject constructor() : ViewModel() {
         } else {
             ""
         }
+        updateCreateEventButtonState()
     }
 
     fun validateAddress() {
@@ -221,6 +225,7 @@ class EventsViewModel @Inject constructor() : ViewModel() {
         } else {
             ""
         }
+        updateCreateEventButtonState()
     }
 
     fun validateCity() {
@@ -229,6 +234,7 @@ class EventsViewModel @Inject constructor() : ViewModel() {
         } else {
             ""
         }
+        updateCreateEventButtonState()
     }
 
     private fun updateButtonState() {
@@ -265,5 +271,22 @@ class EventsViewModel @Inject constructor() : ViewModel() {
                 locations.value != originalLocations
     }
 
+    fun canCreateEvent(): Boolean {
+        return title.value.isNotBlank() &&
+                titleErrorMsg.value.isEmpty() &&
+                description.value.isNotBlank() &&
+                descriptionErrorMsg.value.isEmpty() &&
+                date.value.isNotBlank() &&
+                dateErrorMsg.value.isEmpty() &&
+                address.value.isNotBlank() &&
+                addressErrorMsg.value.isEmpty() &&
+                city.value.isNotBlank() &&
+                cityErrorMsg.value.isEmpty() &&
+                validateLocations()
+    }
+
+    private fun updateCreateEventButtonState() {
+        isEnabledCreateEventButton.value = canCreateEvent()
+    }
 
 }

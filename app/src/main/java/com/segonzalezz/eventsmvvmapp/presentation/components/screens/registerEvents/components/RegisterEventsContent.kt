@@ -232,7 +232,7 @@ fun CardForm(navController: NavHostController, viewModel: EventsViewModel) {
             // Botón para Crear Evento
             DefaultButton(
                 text = "Crear",
-                enabled = viewModel.isEnabledCreateEventButton.value, // Siempre habilitado para permitir la validación al hacer clic
+                enabled =  viewModel.isEnabledCreateEventButton.value, // Siempre habilitado para permitir la validación al hacer clic
                 onClick = {
                     if (viewModel.validateFields()) {
                         viewModel.createEvent(

@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -97,6 +98,7 @@ fun MenuAdminButtonBar(
 
         // Mostrar resultados de búsqueda
         if (showSearchBar && searchText.isNotEmpty()) {
+            val listState = rememberLazyListState()
             Column(
                 modifier = Modifier
                     .fillMaxSize().offset(y = 110.dp)
@@ -113,34 +115,21 @@ fun MenuAdminButtonBar(
 
                 if (filteredEvents.isNotEmpty()) {
                     Text(
-                        text = "Eventos encontrados",
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(vertical = 1.dp, horizontal = 12.dp)
-                    )
-                    LazyColumn(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        items(filteredEvents) { event ->
-                            EventCard(event, isHighlighted = searchText.isNotEmpty())
-                        }
-                    }
-                }
-
-                if (filteredCoupons.isNotEmpty()) {
-                    Text(
-                        text = "Cupones encontrados",
+                        text = "Cupones y eventos encontrados",
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(horizontal = 12.dp)
                     )
                     LazyColumn(
-                        modifier = Modifier.fillMaxWidth().offset(y = -12.dp)
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 174.dp)
                     ) {
+                        items(filteredEvents) { event ->
+                            EventCard(event, isHighlighted = searchText.isNotEmpty())
+                        }
                         items(filteredCoupons) { coupon ->
                             CouponCard(coupon, isHighlighted = searchText.isNotEmpty())
                         }
                     }
                 }
-
                 if (filteredEvents.isEmpty() && filteredCoupons.isEmpty()) {
                     Text(
                         text = "No se encontraron resultados",
@@ -307,8 +296,7 @@ fun CouponCard(coupon: Coupon, isHighlighted: Boolean) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(12.dp)
-            .offset(y = 14.dp)
+            .padding(8.dp)
             .width(500.dp)
             .shadow(if (isHighlighted) 10.dp else 2.dp, RoundedCornerShape(10.dp)),
         elevation = if (isHighlighted) CardDefaults.cardElevation(8.dp) else CardDefaults.cardElevation(2.dp),

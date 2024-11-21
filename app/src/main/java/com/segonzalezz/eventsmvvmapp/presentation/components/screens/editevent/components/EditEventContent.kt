@@ -168,6 +168,9 @@ fun CardForm(navController: NavHostController, viewModel: EventsViewModel) {
             Spacer(modifier = Modifier.height(10.dp))
 
             // Detalles de Ubicaciones con Asientos
+            LaunchedEffect(viewModel.locations.value) {
+                Log.d("DE464UG", "Sincronizando fecha de inicio: ${viewModel.locations.value}")
+            }
             Text(text = "Ubicaciones del Evento", color = MaterialTheme.colorScheme.onSurface)
             viewModel.locations.value.forEachIndexed { index, location ->
                 LocationWithSeats(
