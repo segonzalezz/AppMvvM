@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,9 +40,14 @@ fun DefaultDatePickerDocked(
     validateField: () -> Unit = { },
     errorMsg: String = ""
 ) {
+    Log.d("DefaultDatePickerDocked", "Initial date passed: $initialDate")
     var showDatePicker by remember { mutableStateOf(false) }
     var selectedDate by remember { mutableStateOf(initialDate) } // Usa la fecha inicial
-
+    Log.d("999", "Initial date passed to selectedDate: $selectedDate")
+    LaunchedEffect(initialDate) {
+        selectedDate = initialDate
+        Log.d("121", "Updated selectedDate: $selectedDate")
+    }
     Column {
         OutlinedTextField(
             value = selectedDate,

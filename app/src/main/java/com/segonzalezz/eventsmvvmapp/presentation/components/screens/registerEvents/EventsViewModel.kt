@@ -21,161 +21,78 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EventsViewModel @Inject constructor() : ViewModel() {
-    val db = Firebase.firestore
+    private val db = Firebase.firestore
 
-    private val _events = MutableStateFlow(emptyList<Event>())
+    // Eventos cargados desde Firestore
+    private val _events = MutableStateFlow<List<Event>>(emptyList())
     val events: StateFlow<List<Event>> = _events.asStateFlow()
+
+    // Evento seleccionado
     var selectedEvent: MutableState<Event?> = mutableStateOf(null)
+
+    // Campos del evento
+    var title: MutableState<String> = mutableStateOf("")
+    var description: MutableState<String> = mutableStateOf("")
+    var date: MutableState<String> = mutableStateOf("")
+    var address: MutableState<String> = mutableStateOf("")
+    var city: MutableState<String> = mutableStateOf("")
+    var type: MutableState<EventType> = mutableStateOf(EventType.DEFAULT)
+    var locations: MutableState<MutableList<Location>> = mutableStateOf(mutableListOf())
+
+    // Estados de validación y errores
+    var titleErrorMsg: MutableState<String> = mutableStateOf("")
+    var descriptionErrorMsg: MutableState<String> = mutableStateOf("")
+    var dateErrorMsg: MutableState<String> = mutableStateOf("")
+    var addressErrorMsg: MutableState<String> = mutableStateOf("")
+    var cityErrorMsg: MutableState<String> = mutableStateOf("")
+    var isEnabledCreateEventButton: MutableState<Boolean> = mutableStateOf(false)
 
     init {
         loadEvents()
     }
 
-    // Validaciones para los campos del evento
-    var title: MutableState<String> = mutableStateOf("")
-    var isTitleValid: MutableState<Boolean> = mutableStateOf(false)
-    var titleErrorMsg: MutableState<String> = mutableStateOf("")
-
-    var description: MutableState<String> = mutableStateOf("")
-    var isDescriptionValid: MutableState<Boolean> = mutableStateOf(false)
-    var descriptionErrorMsg: MutableState<String> = mutableStateOf("")
-
-    var date: MutableState<String> = mutableStateOf("")
-    var isDateValid: MutableState<Boolean> = mutableStateOf(false)
-    var dateErrorMsg: MutableState<String> = mutableStateOf("")
-
-    var address: MutableState<String> = mutableStateOf("")
-    var isAddressValid: MutableState<Boolean> = mutableStateOf(false)
-    var addressErrorMsg: MutableState<String> = mutableStateOf("")
-
-    var city: MutableState<String> = mutableStateOf("")
-    var isCityValid: MutableState<Boolean> = mutableStateOf(false)
-    var cityErrorMsg: MutableState<String> = mutableStateOf("")
-
-    var locations: MutableState<List<Location>> = mutableStateOf(listOf())
-
-    fun addLocation() {
-        val newLocation = Location(name = "", maxCapacity = 0, price = 0.0f)
-        locations.value = locations.value + newLocation
-    }
-
-    fun updateLocation(index: Int, newLocation: Location) {
-        locations.value = locations.value.toMutableList().apply {
-            set(index, newLocation)
-        }
-    }
-
-    fun removeLocation(index: Int) {
-        locations.value = locations.value.toMutableList().apply {
-            removeAt(index)
-        }
-    }
-
-    var type: MutableState<EventType> = mutableStateOf(EventType.DEFAULT)
-
-    var isEnabledCreateEventButton = false
-
-    fun enabledCreateEventButton() {
-        isEnabledCreateEventButton = isTitleValid.value && isDescriptionValid.value
-                && isDateValid.value && isAddressValid.value && isCityValid.value
-    }
-
-    // Funciones de validación
-    fun validateTitle() {
-        if (title.value.length >= 3) {
-            isTitleValid.value = true
-            titleErrorMsg.value = ""
-        } else {
-            isTitleValid.value = false
-            titleErrorMsg.value = "El título debe tener al menos 3 caracteres"
-        }
-        enabledCreateEventButton()
-    }
-
-    fun validateDescription() {
-        if (description.value.length >= 10) {
-            isDescriptionValid.value = true
-            descriptionErrorMsg.value = ""
-        } else {
-            isDescriptionValid.value = false
-            descriptionErrorMsg.value = "La descripción debe tener al menos 10 caracteres"
-        }
-        enabledCreateEventButton()
-    }
-
-    fun validateDate() {
-        // Aquí podrías agregar una validación para el formato de la fecha o su valor
-        if (date.value.isNotEmpty()) {
-            isDateValid.value = true
-            dateErrorMsg.value = ""
-        } else {
-            isDateValid.value = false
-            dateErrorMsg.value = "La fecha no puede estar vacía"
-        }
-        enabledCreateEventButton()
-    }
-
-    fun validateAddress() {
-        val regex = Regex("^[a-zA-Z0-9\\s#-]+$")
-        if (address.value.contains("-") && address.value.contains("#") && regex.matches(address.value)) {
-            isAddressValid.value = true
-            addressErrorMsg.value = ""
-        } else {
-            isAddressValid.value = false
-            addressErrorMsg.value = "Dirección no válida"
-        }
-        enabledCreateEventButton()
-    }
-
-    fun validateCity() {
-        if (city.value.isNotEmpty()) {
-            isCityValid.value = true
-            cityErrorMsg.value = ""
-        } else {
-            isCityValid.value = false
-            cityErrorMsg.value = "La ciudad no puede estar vacía"
-        }
-        enabledCreateEventButton()
-    }
-
+    // Cargar eventos desde Firestore
     fun loadEvents() {
         viewModelScope.launch {
-            _events.value = getEventsList()
+            try {
+                val snapshot = db.collection("events").get().await()
+                _events.value = snapshot.documents.mapNotNull { doc ->
+                    doc.toObject(Event::class.java)?.apply { id = doc.id }
+                }
+            } catch (e: Exception) {
+                Log.e("EventsViewModel", "Error al cargar eventos: ${e.message}")
+            }
         }
     }
 
-    private suspend fun getEventsList(): List<Event> {
-        val snapshot = db.collection("events")
-            .get().await()
-        return snapshot.documents.mapNotNull {
-            val event = it.toObject(Event::class.java)
-            requireNotNull(event)
-            event.id = it.id
-            event
+    // Crear un nuevo evento
+    fun createEvent(event: Event, onSuccess: () -> Unit, onError: (String) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val docRef = db.collection("events").add(event).await()
+                event.id = docRef.id
+                loadEvents()
+                onSuccess()
+            } catch (e: Exception) {
+                onError("Error al crear el evento: ${e.message}")
+            }
         }
     }
 
-    suspend fun createEvent(event: Event, onSuccess: () -> Unit, onError: (String) -> Unit) {
-        try {
-            val newEventRef = db.collection("events").add(event).await()
-            event.id = newEventRef.id
-            loadEvents()
-            onSuccess()
-        } catch (e: Exception) {
-            onError("Error al crear evento.")
+    // Editar evento existente
+    fun editEvent(event: Event, onSuccess: () -> Unit, onError: (String) -> Unit) {
+        viewModelScope.launch {
+            try {
+                db.collection("events").document(event.id).set(event).await()
+                loadEvents()
+                onSuccess()
+            } catch (e: Exception) {
+                onError("Error al editar el evento: ${e.message}")
+            }
         }
     }
 
-    suspend fun editEvent(event: Event, onSuccess: () -> Unit, onError: (String) -> Unit) {
-        try {
-            db.collection("events").document(event.id).set(event).await()
-            loadEvents()
-            onSuccess()
-        } catch (e: Exception) {
-            onError("Error al editar evento: ${e.message}")
-        }
-    }
-
+    // Eliminar evento
     fun deleteEvent(event: Event) {
         viewModelScope.launch {
             try {
@@ -187,7 +104,118 @@ class EventsViewModel @Inject constructor() : ViewModel() {
         }
     }
 
+    // Establecer el evento seleccionado
     fun setSelectedEvent(event: Event?) {
         selectedEvent.value = event
+        event?.let {
+            title.value = it.title
+            description.value = it.description
+            date.value = it.date
+            address.value = it.address
+            city.value = it.city
+            type.value = it.type
+            locations.value = it.locations.toMutableList()
+        }
+        validateFields()
+    }
+
+    // Agregar una nueva ubicación
+    fun addLocation() {
+        // Aseguramos que las ubicaciones se actualicen correctamente
+        val updatedLocations = locations.value.toMutableList()
+        updatedLocations.add(Location())
+        locations.value = updatedLocations
+    }
+
+
+    // Actualizar una ubicación específica
+    fun updateLocation(index: Int, updatedLocation: Location) {
+        if (index in locations.value.indices) {
+            locations.value[index] = updatedLocation
+        }
+    }
+
+    // Eliminar una ubicación
+    fun removeLocation(index: Int) {
+        if (index in locations.value.indices) {
+            val updatedLocations = locations.value.toMutableList()
+            updatedLocations.removeAt(index)
+            locations.value = updatedLocations
+        }
+    }
+
+
+    fun validateLocations(): Boolean {
+        return locations.value.all { location ->
+            location.name.isNotBlank() &&
+                    location.maxCapacity > 0 &&
+                    location.price > 0
+        }
+    }
+
+
+    // Validar campos
+    fun validateFields(): Boolean {
+        validateTitle()
+        validateDescription()
+        validateDate()
+        validateAddress()
+        validateCity()
+        return titleErrorMsg.value.isEmpty() &&
+                descriptionErrorMsg.value.isEmpty() &&
+                dateErrorMsg.value.isEmpty() &&
+                addressErrorMsg.value.isEmpty() &&
+                cityErrorMsg.value.isEmpty() &&
+                validateLocations()
+    }
+
+
+    fun validateTitle() {
+        titleErrorMsg.value = if (title.value.isBlank() || title.value.length < 3) {
+            "El título debe tener al menos 3 caracteres"
+        } else {
+            ""
+        }
+    }
+
+    fun validateDescription() {
+        descriptionErrorMsg.value = if (description.value.isBlank() || description.value.length < 10) {
+            "La descripción debe tener al menos 10 caracteres"
+        } else {
+            ""
+        }
+    }
+
+    fun validateDate() {
+        dateErrorMsg.value = if (date.value.isBlank()) {
+            "La fecha no puede estar vacía"
+        } else {
+            ""
+        }
+    }
+
+    fun validateAddress() {
+        addressErrorMsg.value = if (address.value.isBlank()) {
+            "La dirección no puede estar vacía"
+        } else {
+            ""
+        }
+    }
+
+    fun validateCity() {
+        cityErrorMsg.value = if (city.value.isBlank()) {
+            "La ciudad no puede estar vacía"
+        } else {
+            ""
+        }
+    }
+
+    private fun updateButtonState() {
+        isEnabledCreateEventButton.value = titleErrorMsg.value.isEmpty() &&
+                descriptionErrorMsg.value.isEmpty() &&
+                dateErrorMsg.value.isEmpty() &&
+                addressErrorMsg.value.isEmpty() &&
+                cityErrorMsg.value.isEmpty() &&
+                locations.value.isNotEmpty()
     }
 }

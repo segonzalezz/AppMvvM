@@ -133,20 +133,17 @@ fun CardForm(navController: NavHostController, viewModel: CouponsViewModel) {
             )
             Spacer(modifier = Modifier.height(12.dp))
 
-            Log.d("fecha", "Fecha de Inicio: ${viewModel.startDate.value}")
-            Log.d("fecha", "Fecha de Fin: ${viewModel.endDate.value}")
-
             // Campo: Fecha de Inicio
             Text(text = "Fecha de Inicio", color = MaterialTheme.colorScheme.onSurface)
             LaunchedEffect(viewModel.startDate.value) {
-                Log.d("2", "Sincronizando fecha de inicio: ${viewModel.startDate.value}")
+                Log.d("DEBUG", "Sincronizando fecha de inicio: ${viewModel.startDate.value}")
             }
-            CustomDateField(
-                initialDate = viewModel.startDate.value,
+            DefaultDatePickerDocked(
                 onDateSelected = {
                     viewModel.startDate.value = it
                     viewModel.checkForChanges()
                 },
+                initialDate = viewModel.startDate.value,
                 errorMsg = viewModel.startDateErrorMsg.value
             )
             Spacer(modifier = Modifier.height(12.dp))
@@ -154,14 +151,14 @@ fun CardForm(navController: NavHostController, viewModel: CouponsViewModel) {
             // Campo: Fecha de Fin
             Text(text = "Fecha de Fin", color = MaterialTheme.colorScheme.onSurface)
             LaunchedEffect(viewModel.endDate.value) {
-                Log.d("1", "Sincronizando fecha de fin: ${viewModel.endDate.value}")
+                Log.d("DEBUG", "Sincronizando fecha de fin: ${viewModel.endDate.value}")
             }
-            CustomDateField(
-                initialDate = viewModel.endDate.value,
+            DefaultDatePickerDocked(
                 onDateSelected = {
                     viewModel.endDate.value = it
                     viewModel.checkForChanges()
                 },
+                initialDate = viewModel.endDate.value,
                 errorMsg = viewModel.endDateErrorMsg.value
             )
             Spacer(modifier = Modifier.height(12.dp))
@@ -210,6 +207,7 @@ fun CardForm(navController: NavHostController, viewModel: CouponsViewModel) {
         }
     }
 }
+
 
 @Composable
 fun CustomDateField(
